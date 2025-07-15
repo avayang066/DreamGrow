@@ -12,12 +12,7 @@ class UserController extends Controller
     // 註冊
     public function register(Request $request, UserService $userService)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-        $user = $userService->register($validated);
+        $user = $userService->register($request->all());
         Auth::login($user);
         return response()->json(['message' => '註冊成功', 'user' => $user]);
     }
@@ -25,12 +20,7 @@ class UserController extends Controller
     // 登入
     public function login(Request $request, UserService $userService)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
-
-        if ($userService->login($credentials)) {
+        if ($userService->login($request->all())) {
             return response()->json(['message' => '登入成功', 'user' => Auth::user()]);
         }
         return response()->json(['message' => '帳號或密碼錯誤'], 401);

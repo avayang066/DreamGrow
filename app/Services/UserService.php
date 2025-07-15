@@ -11,13 +11,23 @@ class UserService
     // 註冊
     public function register(array $data)
     {
-        $data['password'] = Hash::make($data['password']);
-        return User::create($data);
+        $validated = validator($data, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
+        ])->validate();
+
+        $validated['password'] = Hash::make($validated['password']);
+        return User::create($validated);
     }
 
     // 登入
-    public function login(array $credentials)
+    public function login(array $data)
     {
-        return Auth::attempt($credentials);
+        $validated = validator($data, [
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ])->validate();
+        return Auth::attempt($validated);
     }
 }
