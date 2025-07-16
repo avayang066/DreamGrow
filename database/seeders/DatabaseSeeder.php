@@ -25,9 +25,18 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $user = User::first(); // 預設拿第一個使用者
+        if (!$user) {
+            $user = User::create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'password' => bcrypt('password'), // 密碼需加密
+            ]);
+        }
 
         $types = [
-            '工作', '興趣', '語言'
+            '工作',
+            '興趣',
+            '語言'
         ];
 
         foreach ($types as $typeName) {
