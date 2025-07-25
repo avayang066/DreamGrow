@@ -9,10 +9,12 @@ class TrackableItem extends Model
 {
     use HasFactory;
 
-    public function type() {
-    return $this->belongsTo(Type::class);
-}
-public function logs() {
-    return $this->hasMany(TrackLog::class);
-}
+    public function type()
+    {
+        return $this->belongsTo(Type::class);
+    }
+    public function logs()
+    {
+        return $this->hasMany(TrackLogs::class);
+    }
 }
