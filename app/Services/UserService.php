@@ -11,16 +11,22 @@ use Laravel\Sanctum\HasApiTokens;
 
 class UserService
 {
+    use HasApiTokens;
+
     // 註冊
     public function register(array $data)
     {
         // 驗證
-        $validated = validator($data, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            // password 若增加 confirmed，會要求有 password_confirmation 欄位二次驗證
-        ])->validate();
+        try {
+            $validated = validator($data, [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|string|min:6',
+            ])->validate();
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            dd('驗證失敗', $e->errors());
+        }
         // 密碼加密
         $validated['password'] = Hash::make($validated['password']);
         // 用戶註冊的功能
@@ -33,16 +39,25 @@ class UserService
     // 登入
     public function login(array $data)
     {
+
         $validated = validator($data, [
             'email' => 'required|email',
             'password' => 'required|string',
         ])->validate();
 
-        if (!Auth::attempt($validated)) {
+        // $attempt = Auth::attempt($validated);
+        // \log::info('User Login Attempt', ['email' => $validated['email'], 'success' => $attempt]);
+
+        // attempt 會建立 session
+        // if (!Auth::attempt($validated)) {
+        //     return response()->json(['message' => '帳號或密碼錯誤'], 401);
+        // }
+
+        $user = User::where('email', $validated['email'])->first();
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
             return response()->json(['message' => '帳號或密碼錯誤'], 401);
         }
 
-        $user = Auth::user();
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
@@ -50,16 +65,10 @@ class UserService
             'token' => $token,
             'user' => $user,
         ]);
-        // Log::info('User login attempt', ['email' => $validated['email'], 'success' => $result]);
-        // return $result;
     }
 
     public function logout()
     {
-        // Auth::logout();
-        // Log::info('User logged out', ['user_id' => Auth::id()]);
-        // return true;
-
         // 移除目前登入者的 token
         Auth::user()->currentAccessToken()->delete();
         return response()->json(['message' => '已登出']);
