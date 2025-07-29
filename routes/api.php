@@ -22,13 +22,22 @@ use App\Http\Controllers\AuthController;
 // });
 
 // 會員 & User
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+// 會員 & User
+Route::controller(UserController::class)->group(function(){
+    Route::post('/register', 'userRegister')->name('register');
+    Route::post('/login', 'login')->name('login');
+    Route::middleware('auth::sanctum')->post('/logout', 'logout')->name('logout');
+    Route::middleware('auth::sanctum')->get('/user', function (Request $request) {
+        return $request->user();
+    })->name('user.profile');
 });
-Route::post('/register', [UserController::class, 'userRegister']);
-Route::post('/login', [UserController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', [UserController::class, 'logout']);
 
 // 大種類頁面
-Route::post('/createtype', [TypeController::class, 'createTypeForUser'])->name('user.createtype');
-Route::get('/gettype/{id}', [TypeController::class, 'getType'])->name('user.gettype');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('type', TypeController::class)
+        ->only(['index', 'store', 'update', 'destroy']);
+});

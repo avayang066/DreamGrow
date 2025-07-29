@@ -17,4 +17,6 @@ class TrackableItem extends Model
     {
         return $this->hasMany(TrackLogs::class);
     }
+
+    
 }

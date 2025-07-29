@@ -44,10 +44,7 @@ class UserService
             'email' => 'required|email',
             'password' => 'required|string',
         ])->validate();
-
-        // $attempt = Auth::attempt($validated);
-        // \log::info('User Login Attempt', ['email' => $validated['email'], 'success' => $attempt]);
-
+     
         // attempt 會建立 session
         // if (!Auth::attempt($validated)) {
         //     return response()->json(['message' => '帳號或密碼錯誤'], 401);

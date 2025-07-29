@@ -8,67 +8,84 @@ use Illuminate\Http\Request;
 
 class TypeService
 {
-    protected $response;
+    private $response;
+    private $request;
 
     function ifUserLogin($userId)
     {
         return auth()->id() == $userId;
     }
 
-    // 新增類別的功能
-    public function createTypeForUser($userId, $data)
+    public function getType($userId)
     {
-        // 錯誤用法，參數無法用->validate()驗證，必須要物件
-        // $validated = $data->validate([
-        //     'name' => 'required|string|max:255',
-        // ]);
+        try {
+            if (!$this->ifUserLogin($userId)) {
+                $this->response = ['message' => '禁止存取'];
+                return $this;
+            }
 
+            $names = Type::pluck('name');
+            $this->response = $names;
+
+            return $this;
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage(),], 400);
+        }
+    }
+
+    public function store($userId, array $data)
+    {
         if (!$this->ifUserLogin($userId)) {
-            // 權限不符時直接回應
             $this->response = ['message' => '禁止存取'];
             return $this;
         }
-        // 測試用
-        // $userId = "1";
 
         $validated = validator($data, [
             'name' => 'required|string|max:255',
         ])->validate();
 
-        try {
-            $type = Type::create([
-                'user_id' => $userId,
-                'name' => $validated['name'],
-            ]);
 
-            $this->resopnse = $type;
-            return $this;
+        $type = Type::create([
+            'user_id' => $userId,
+            'name' => $validated['name'],
+        ]);
+        $this->response = $type;
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => '類別建立失敗',
-                'error' => $e->getMessage(),
-            ], 400);
-        }
-
+        return $this;
     }
 
-    // 將已有類別顯示在畫面上
-    public function getType($userId)
+    public function update($userId, $typeId, array $data)
     {
-        try {
-            if (!$this->ifUserLogin($userId)) {
-                // 權限不符時直接回應
-                return response()->json(['message' => '禁止存取'], 403);
-            }
-
-            $names = Type::pluck('name');
-            $this->response = $names;
-            // return response()->json(['name' => $names]);
-
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage(),], 400);
+        if ($this->response) {
+            return $this->response;
         }
+
+        $type = Type::where('id', $typeId)
+            ->where('user_id', $userId)
+            ->first();
+        if (!$type) {
+            return response()->json(['message' => '類別不存在'], 404);
+        }
+
+        $validated = validator($data, [
+            'name' => 'required|string|max:255',
+        ])->validate();
+
+        $type->update(['name' => $validated['name']]);
+        $this->response = $type;
+
+        return $this;
+    }
+
+    public function destroy($userId, $typeId)
+    {
+        $type = Type::where('id', $typeId)
+            ->where('user_id', $userId)
+            ->first();
+
+        $type->delete();
+        return $this;
     }
 
     public function getResponse()
