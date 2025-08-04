@@ -18,20 +18,16 @@ class TypeService
 
     public function getType($userId)
     {
-        try {
-            if (!$this->ifUserLogin($userId)) {
-                $this->response = ['message' => '禁止存取'];
-                return $this;
-            }
+        $types = Type::with('user')
+            ->where('user_id', $userId)
+            ->get()
+            ->map(function ($item) {
+                return $item->dataFormat();
+            });
 
-            $names = Type::pluck('name');
-            $this->response = $names;
+        $this->response = $types;
 
-            return $this;
-
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage(),], 400);
-        }
+        return $this;
     }
 
     public function store($userId, array $data)

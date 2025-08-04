@@ -16,7 +16,12 @@ class Type extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function exp()
+    {
+        return $this->hasOne(TrackableItem::class, 'type_id','id');
     }
 
     public function dataFormat()
@@ -24,6 +29,11 @@ class Type extends Model
         return [
             'user_id' => $this->user_id,
             'name' => $this->name,
+            'exp' => [
+                'level' => $this->exp->level,
+                'exp' => $this->exp->exp,
+                'achievement_text' => $this->exp->achievement_text ?? null,
+            ]
         ];
     }
 }
