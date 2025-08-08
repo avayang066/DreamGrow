@@ -32,10 +32,10 @@ class TrackLogsController extends Controller
             ->getResponse();
     }
 
-    public function update(Request $request, $typeId, $trackable_item_id)
+    public function update(Request $request, $typeId, $trackable_item_id, $track_log_id)
     {
         return (new TrackLogService())
-            ->update(auth()->id(), $request, $typeId, $trackable_item_id)
+            ->update(auth()->id(), $request, $typeId, $trackable_item_id, $track_log_id)
             ->getResponse();
     }
 

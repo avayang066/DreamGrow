@@ -80,9 +80,30 @@ class TypeService
             ->where('user_id', $userId)
             ->first();
 
+        if (!$type) {
+            $this->response = ['success' => false, 'message' => '類型不存在'];
+            return $this;
+        }
+
         $type->delete();
+        $this->response = ['success' => true, 'message' => '刪除成功'];
         return $this;
     }
+
+public function show($userId, $typeId)
+{
+    $type = Type::where('id', $typeId)
+        ->where('user_id', $userId)
+        ->first();
+
+    if (!$type) {
+        $this->response = ['message' => '類型不存在'];
+        return $this;
+    }
+
+    $this->response = $type->dataFormat();
+    return $this;
+}
 
     public function getResponse()
     {

@@ -44,7 +44,7 @@ class UserService
             'email' => 'required|email',
             'password' => 'required|string',
         ])->validate();
-     
+
         // attempt 會建立 session
         // if (!Auth::attempt($validated)) {
         //     return response()->json(['message' => '帳號或密碼錯誤'], 401);
@@ -66,6 +66,10 @@ class UserService
 
     public function logout()
     {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => '未登入或token失效'], 401);
+        }
         // 移除目前登入者的 token
         Auth::user()->currentAccessToken()->delete();
         return response()->json(['message' => '已登出']);

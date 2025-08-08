@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Type;
 use App\Models\TrackLog;
 use App\Models\TrackableItem;
 use Illuminate\Support\Carbon;
@@ -16,12 +17,23 @@ class TrackLogService
         return TrackLog::where('trackable_item_id', $trackableItemId)->exists();
     }
 
+    // 單一 trackable_items 的所有 track_logs
     public function getTrackLogs($userId, $typeId, $trackable_item_id)
     {
+
+        $trackableItem = TrackableItem::where('type_id', $typeId)
+            ->where('id', $trackable_item_id)
+            ->first();
+
+        if (!$trackableItem) {
+            $this->response = ['message' => 'Trackable item not found or type mismatch'];
+            return $this;
+        }
+
         $trackLogs = TrackLog::where('user_id', $userId)
-            ->where('type_id', $typeId)
             ->where('trackable_item_id', $trackable_item_id)
             ->get();
+
         $this->response = $trackLogs;
 
         return $this;
@@ -30,8 +42,10 @@ class TrackLogService
     public function store($request, $typeId, $trackable_item_id)
     {
         // trackable_item_id 已在 Controller 中取得，不須再驗證一次，確保存在就好，否則會有「網址參數和 body 參數不一致」的風險
-        if (TrackableItem::where('type_id', $typeId)
-            ->where('id', $trackable_item_id)->exists()) {
+        if (
+            !Type::where('id', $typeId)->exists()
+            && !TrackableItem::where('id', $trackable_item_id)->exists()
+        ) {
             $this->response = ['message' => 'trackable item does not exist'];
             return $this;
         }
@@ -52,25 +66,43 @@ class TrackLogService
         $trackLogs->save();
 
         $trackableItem = TrackableItem::find($trackable_item_id);
-        $exp_gained = TrackLog::where('trackable_item_id', $trackable_item_id)
-            ->sum('exp_gained');
+        // 累加本次 exp_gained
+        $trackableItem->exp += $trackLogs->exp_gained;
 
         $daysInTrackLog = TrackLog::where('trackable_item_id', $trackable_item_id)->count();
-        $achievement_exp = ($daysInTrackLog == $trackableItem->streak_days_required) ? $trackableItem->streak_bonus_exp : 0;
+        $achievement_message = null; // 預設 null 這樣如果沒有達成成就就不會回傳訊息
+        if ($daysInTrackLog == $trackableItem->streak_days_required) {
+            $trackableItem->exp += $trackableItem->streak_bonus_exp;
+            $achievement_message = ['message' => 'Get the achievement ' . $trackableItem->achievement_text .'！'];
+        }
 
-        $trackableItem->exp = $exp_gained + $achievement_exp;
+        while ($trackableItem->exp >= 30) {
+            $trackableItem->level += 1;
+            $trackableItem->exp = 0;
+        }
+        
         $trackableItem->save();
 
-        $this->response = $trackLogs;
+        $this->response = [
+            'track_log' => $trackLogs,
+            'achievement_message' => $achievement_message
+        ];
+
         return $this;
     }
 
-    public function update($userId, $request, $typeId, $trackable_item_id)
+    public function update($userId, $request, $typeId, $trackable_item_id, $track_log_id)
     {
+        if (!Type::where('id', $typeId)->exists()) {
+            $this->response = ['message' => 'Type does not exist'];
+            return false;
+        }
+
         $trackableItem = TrackLog::where('user_id', $userId)
-            ->where('type_id', $typeId)
             ->where('trackable_item_id', $trackable_item_id)
+            ->where('id', $track_log_id)
             ->first();
+
         if (!$trackableItem) {
             $this->response = ['message' => 'Trackable item not found'];
             return $this;

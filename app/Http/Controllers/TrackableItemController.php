@@ -9,7 +9,7 @@ class TrackableItemController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->only(['index','store', 'update', 'destroy']);
+        $this->middleware('auth')->only(['index', 'store', 'update', 'destroy']);
     }
 
     public function getResponse()
@@ -28,14 +28,14 @@ class TrackableItemController extends Controller
     public function store(Request $request, $typeId)
     {
         return (new TrackableItemService())
-            ->store($typeId, $request)
+            ->store($request, $typeId)
             ->getResponse();
     }
 
-    public function update(Request $request, $typeId)
+    public function update(Request $request, $typeId, $trackable_item_id)
     {
         return (new TrackableItemService())
-            ->update(auth()->id(), $request, $typeId)
+            ->update($request, $typeId, $trackable_item_id)
             ->getResponse();
     }
 
@@ -47,10 +47,11 @@ class TrackableItemController extends Controller
             ->getResponse();
     }
 
-    public function getTrackableItemExpFromTrackLog($typeId, $trackable_item_id)
+    public function show($typeId, $trackable_item_id)
     {
-        return (new TrackableItemService())
-            ->getTrackableItemExpFromTrackLog($typeId, $trackable_item_id)
-            ->getResponse();
+        $userId = auth()->id();
+        $service = new TrackableItemService();
+        return $service->show($userId, $typeId, $trackable_item_id)->getResponse();
     }
+
 }

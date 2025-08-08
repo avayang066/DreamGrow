@@ -20,23 +20,23 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/fortest', function () {
-//     // echo "123";
-//     function test()
-//     {
-//         echo "123";
-//     }
-//     test();
-// });
+Route::get('/home', function () {
+    return view('home');
+});
 
-Route::post('/signup', [UserController::class, 'userRegister'])->name('user.register');
-Route::post('/login', [UserController::class, 'login'])->name('user.signin');
-Route::post('/logout', [UserController::class, 'logout'])->name('user.logout');
+Route::get('/register', function () {
+    return view('register');
+})->name('register');
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
+Route::get('/logout', function () {
+    return view('logout');
+})->name('logout');
 
-// Route::middleware(['auth'])->group(function () {
-//     Route::post('/createtype/{id}', [TypeController::class, 'createTypeForUser'])->name('user.createtype');
-//     Route::get('/gettype/{id}', [TypeController::class, 'getType'])->name('user.gettype');
-// });
-
-Route::post('/createtype/{id}', [TypeController::class, 'createTypeForUser'])->name('user.createtype');
-Route::get('/gettype/{id}', [TypeController::class, 'getType'])->name('user.gettype');
+Route::get('/type', function () {
+    return view('type');
+})->name('type');
+Route::get('/type/{type}/trackable-item', function ($typeId) {
+    return view('trackableItem', ['typeId' => $typeId]);
+});

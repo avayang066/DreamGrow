@@ -28,8 +28,8 @@ use App\Http\Controllers\AuthController;
 Route::controller(UserController::class)->group(function () {
     Route::post('/register', 'userRegister')->name('register');
     Route::post('/login', 'login')->name('login');
-    Route::middleware('auth::sanctum')->post('/logout', 'logout')->name('logout');
-    Route::middleware('auth::sanctum')->get('/user', function (Request $request) {
+    Route::middleware('auth:sanctum')->post('/logout', 'logout')->name('logout');
+    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
     })->name('user.profile');
 });
@@ -37,16 +37,12 @@ Route::controller(UserController::class)->group(function () {
 // 種類頁面
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('type', TypeController::class)
-        ->only(['index', 'store', 'update', 'destroy']); // type
+        ->only(['index', 'store', 'update', 'destroy', 'show']); // type
     Route::apiResource('type.trackable-item', TrackableItemController::class) // /api/type/{type}/trackable-item/{trackable-item}
-        ->only(['index', 'store', 'update', 'destroy']); // trackable-item
-    Route::apiResource('type.trackable-item.track-log', TrackLogsController::class) // 1. /api/type/{type}/trackable-item  2. api/trackable-item/{trackable_item}/track-log/{track_log}
+        ->only(['index', 'store', 'update', 'destroy', 'show']); // trackable-item
+    Route::apiResource('type.trackable-item.track-log', TrackLogsController::class) //api/type/{type}/trackable-item/{trackable_item}/track-log/{track_log}
         ->only(['index', 'store', 'update', 'destroy', 'show']); // track log
 });
 
-// 取得特定 trackable item，包含 trackLog 加起來的經驗值與成就經驗值 總和
 Route::middleware('auth:sanctum')->get(
-    'type/{type}/trackable-item/{trackable_item}/exp',
-    [TrackableItemController::class, 'getTrackableItemExpFromTrackLog']
-);
-
+    'type/{type}/trackable-item/{trackable_item}/track-log/date/{date}',[TrackLogsController::class, 'getByDate'])->name('track-log.get-by-date');

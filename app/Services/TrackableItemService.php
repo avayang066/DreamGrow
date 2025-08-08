@@ -15,7 +15,7 @@ class TrackableItemService
     function validateTypeExists($typeId)
     {
         if (!Type::where('id', $typeId)->exists()) {
-           $this->response = ['message' => 'Type does not exist'];
+            $this->response = ['message' => 'Type does not exist'];
             return false;
         }
         return true;
@@ -50,7 +50,6 @@ class TrackableItemService
 
     public function store(Request $request, $typeId)
     {
-
         if (!$this->validateTypeExists($typeId)) {
             return $this;
         }
@@ -77,7 +76,7 @@ class TrackableItemService
         return $this;
     }
 
-    public function update( Request $request, $typeId)
+    public function update(Request $request, $typeId, $trackable_item_id)
     {
         if (!$this->validateTypeExists($typeId)) {
             return $this;
@@ -85,8 +84,10 @@ class TrackableItemService
 
         $userId = auth()->id();
         $trackableItem = TrackableItem::where('user_id', $userId)
-        ->where('type_id', $typeId)
-        ->first();
+            ->where('type_id', $typeId)
+            ->where('id', $trackable_item_id)
+            ->first();
+
         if (!$trackableItem) {
             $this->response = ['message' => 'Trackable item not found'];
             return $this;
@@ -106,7 +107,11 @@ class TrackableItemService
             return $this;
         }
 
-        $trackableItem = TrackableItem::where('user_id', $userId)->where('type_id', $typeId)->where('id', $trackable_item_id)->first();
+        $trackableItem = TrackableItem::where('user_id', $userId)
+            ->where('type_id', $typeId)
+            ->where('id', $trackable_item_id)
+            ->first();
+
         if (!$trackableItem) {
             $this->response = ['message' => 'Trackable item not found'];
             return $this;
@@ -116,36 +121,29 @@ class TrackableItemService
         return $this;
     }
 
-    public function getResponse()
-    {
-        return response()->json($this->response);
-    }
-
-    public function getTrackableItemExpFromTrackLog($typeId, $trackable_item_id)
+    public function show($userId, $typeId, $trackable_item_id)
     {
         if (!$this->validateTypeExists($typeId)) {
             return $this;
         }
 
-        $trackableItem = TrackableItem::find($trackable_item_id);
+        $trackableItem = TrackableItem::where('user_id', $userId)
+            ->where('type_id', $typeId)
+            ->where('id', $trackable_item_id)
+            ->first();
+
         if (!$trackableItem) {
             $this->response = ['message' => 'Trackable item not found'];
             return $this;
         }
 
-        if ($typeId != null && $trackableItem->type_id != $typeId) {
-            $this->response = ['message' => 'Type mismatch'];
-            return $this;
-        }
-
-        $daysInTrackLog = TrackLog::where('trackable_item_id', $trackable_item_id)->count();
-        $exp_gained = TrackLog::where('trackable_item_id', $trackable_item_id)->sum('exp_gained');
-        $achievement_exp = $daysInTrackLog == $trackableItem->streak_days_required ? $trackableItem->streak_bonus_exp : 0;
-
-        $trackableItem->exp += $exp_gained + $achievement_exp;
-        $trackableItem->save();
-
-        $this->response = $trackableItem;
+        $this->response = $trackableItem->dataFormat();
         return $this;
     }
+
+    public function getResponse()
+    {
+        return response()->json($this->response);
+    }
+
 }

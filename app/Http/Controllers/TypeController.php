@@ -9,7 +9,7 @@ class TypeController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->only(['store', 'update', 'destroy']);
+        $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
     }
 
     public function getResponse()
@@ -47,4 +47,13 @@ class TypeController extends Controller
             ->destroy($userId, $typeId)
             ->getResponse();
     }
+
+    public function show($typeId)
+    {
+        $userId = auth()->id();
+        return (new TypeService())
+            ->show($userId, $typeId)
+            ->getResponse();
+    }
+
 }
