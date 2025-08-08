@@ -9,10 +9,13 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Quicksand:wght@400;700&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         body {
+
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            font-family: 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            /* font-family: 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif; */
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
@@ -25,8 +28,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            /* 左右分散 */
-            font-family: 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             box-shadow: 0 2px 8px #e0e7ff;
             font-size: 1.08em;
             margin-bottom: 18px;
@@ -84,6 +86,8 @@
         }
 
         .btn-group {
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-size: 0.1em;
             display: flex;
             justify-content: center;
             gap: 18px;
@@ -91,6 +95,8 @@
         }
 
         .btn {
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-size: 0.1em;
             padding: 12px 32px;
             border: none;
             border-radius: 8px;
@@ -127,37 +133,58 @@
 </head>
 
 <nav class="dream-navbar">
-    <a href="/home" class="nav-home">🏠 回首頁</a>
+    <a href="/home" class="nav-home">Home</a>
     <span class="nav-user"><span id="navUserName">載入中...</span></span>
 </nav>
 
 <body>
     <div class="container">
         <div class="dream-bg">🌙</div>
-        <h1>🌙</h1>
-        <div class="dream-desc">
-            記錄你的成長，每做一件事情就能獲得經驗值，累積升等、解鎖成就，回顧每一天的努力與夢想！
+        <h1>D</h1>
+        <div class="dream-desc" style="font-size: 0.1em">
+            Everything you do can earn exp, level up, unlock achievements, and review your daily efforts and dreams!
         </div>
         <ul class="feature-list">
-            <li>✨ 自訂類型與項目，打造夢想目標</li>
-            <li>✨ 項目每輸入一次內容獲得<b>該經驗值</b></li>
-            <li>✨ 累積 <b>30 經驗值</b> 即可升等</li>
-            <li>✨ 可自訂項目連續幾天獲得經驗值 — 解鎖成就並獲得額外經驗</li>
-            <li>✨ 點擊項目，可展開回顧每日輸入內容</li>
-            <li>✨ 會員註冊、登入，專屬個人夢想成長紀錄</li>
+            <li>自訂類型與項目，打造夢想目標</li>
+            <li>項目每新增一次內容獲得<b> exp</b></li>
+            <li>累積<b> 30exp </b>即可升等</li>
+            <li>可自訂項目連續幾天獲得經驗值，解鎖成就並獲得額外經驗</li>
+            <li>點擊項目，可展開回顧每日輸入內容</li>
+            <li>會員註冊、登入，專屬個人夢想成長紀錄</li>
+            <br>
+            <span style="font-size: 0.1em">
+                ✨ 1. Customize types and items to build your dream goals
+                <br>
+                <br>
+                ✨ 2. Gain experience points each time you enter item content
+                <br>
+                <br>
+                ✨ 3. Level up for every 30 experience points accumulated
+                <br>
+                <br>
+                ✨ 4. Set streak goals—unlock achievements and earn bonus experience
+                <br>
+                <br>
+                ✨ 5. Click an item to review your daily entries
+                <br>
+                <br>
+                ✨ 6. Member registration & login for your personal dream growth records
+            </span>
         </ul>
         <div class="btn-group">
-            <a href="{{ route('register') }}" class="btn" id="registerBtn">註冊</a>
-            <a href="{{ route('login') }}" class="btn" id="loginBtn">登入</a>
+            <a href="{{ route('register') }}" class="btn" id="registerBtn">register</a>
+            <a href="{{ route('login') }}" class="btn" id="loginBtn">login</a>
             <form method="POST" action="{{ route('logout') }}" id="logoutForm" style="display:none;">
                 @csrf
-                <button type="submit" class="btn">登出</button>
+                <button type="submit" class="btn">logout</button>
             </form>
-            <a href="{{ route('type') }}" class="btn">進入類型管理</a>
+            <a href="{{ route('type') }}" class="btn">enter skill tree</a>
         </div>
-        <div style="color:#888; font-size:0.95em;">
-            成長的足跡。<br>
-            <b>123</b>，陪你一起記錄、回顧、升等！
+        <div style="color:#888; font-size:0.1em;">
+            see how you growth
+            <br>
+            <br>
+            陪你一起記錄、回顧、升等！
         </div>
     </div>
 </body>

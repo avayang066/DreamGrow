@@ -8,10 +8,11 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Quicksand:wght@400;700&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            font-family: 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
@@ -25,7 +26,7 @@
             align-items: center;
             justify-content: space-between;
             /* 左右分散 */
-            font-family: 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             box-shadow: 0 2px 8px #e0e7ff;
             font-size: 1.08em;
             margin-bottom: 18px;
@@ -69,6 +70,7 @@
         }
 
         h2 {
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             font-size: 2em;
             color: #6c63ff;
             margin-bottom: 18px;
@@ -88,20 +90,22 @@
         }
 
         .add-form input {
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             flex: 1;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 1em;
+            font-size: 0.1em;
         }
 
         .btn {
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-size: 0.1em;
             padding: 8px 20px;
             border: none;
             border-radius: 6px;
             background: #6c63ff;
             color: #fff;
-            font-size: 1em;
             cursor: pointer;
             transition: background 0.2s;
             text-decoration: none;
@@ -111,31 +115,48 @@
             background: #4834d4;
         }
 
+        .add-form input[type="text"] {
+            background: rgba(255, 255, 255, 0.45);
+            border: 1.5px solid #d1d5fa;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px #e0e7ff, 0 0 16px 2px #a8edea44;
+            font-size: 1.08em;
+            padding: 10px 16px;
+            color: #4834d4;
+            outline: none;
+            transition: box-shadow 0.2s, border-color 0.2s;
+            backdrop-filter: blur(2px);
+        }
+
+        .add-form input[type="text"]:focus {
+            border-color: #6c63ff;
+            box-shadow: 0 4px 24px #b3c6ff, 0 0 24px 6px #fed6e344;
+            background: rgba(255, 255, 255, 0.65);
+        }
         ul.type-list li {
-            background: rgba(255, 255, 255, 0.55);
-            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.65);
+            /* 長方形雲朵狀，圓角+鋸齒感 */
+            border-radius: 60% 60% 48% 48% / 55% 65% 45% 55%;
             box-shadow:
                 0 4px 18px 0 rgba(166, 180, 255, 0.18),
                 0 1.5px 8px #e0e7ff,
                 0 0 40px 12px rgba(168, 237, 234, 0.18),
-                /* 淡藍暈染 */
                 0 0 60px 18px rgba(254, 214, 227, 0.13);
-            /* 淡粉暈染 */
             margin-bottom: 22px;
-            width: 200px;
-            height: 200px;
+            width: 320px;
+            height: 100px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
             position: relative;
-            transition: box-shadow 0.2s, transform 0.2s;
+            transition: box-shadow 1s cubic-bezier(.22, 1, .36, 1), transform 1s cubic-bezier(.22, 1, .36, 1);
             margin-left: auto;
             margin-right: auto;
             padding: 0;
-            transition: box-shadow 1s cubic-bezier(.22, 1, .36, 1), transform 1s cubic-bezier(.22, 1, .36, 1);
             will-change: box-shadow, transform;
+            filter: drop-shadow(0 0 18px #a8edea88) drop-shadow(0 0 24px #fed6e388);
         }
 
         ul.type-list li:hover {
@@ -230,20 +251,23 @@
 </head>
 
 <nav class="dream-navbar">
-    <a href="/home" class="nav-home">🏠 回首頁</a>
+    <a href="/home" class="nav-home">Home</a>
     <span class="nav-user"><span id="navUserName">載入中...</span></span>
 </nav>
 
 <body>
     <div class="container">
-        <a href="/home" class="back-link">← 回首頁</a>
-        <h2>類型管理</h2>
-        <div class="desc">
+        <a href="/home" class="back-link">← back</a>
+        <h2>DreamTree</h2>
+        <div class="desc" style="font-size: 0.5em;">
             新增、編輯或刪除，打造專屬成長目標！
         </div>
+        <div style="font-size: 0.3em;">
+            
+        </div>
         <div class="add-form">
-            <input type="text" id="newTypeName" placeholder="輸入新類型名稱">
-            <button id="addTypeBtn" class="btn">新增</button>
+            <input type="text" id="newTypeName" placeholder="New skills..." style="font-size: 0.1em;">
+            <button id="addTypeBtn" class="btn">create</button>
         </div>
         <ul class="type-list" id="typeList"></ul>
     </div>
