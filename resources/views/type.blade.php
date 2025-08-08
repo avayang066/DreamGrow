@@ -133,18 +133,35 @@
             box-shadow: 0 4px 24px #b3c6ff, 0 0 24px 6px #fed6e344;
             background: rgba(255, 255, 255, 0.65);
         }
+
         ul.type-list li {
-            background: rgba(255, 255, 255, 0.65);
-            /* 長方形雲朵狀，圓角+鋸齒感 */
-            border-radius: 60% 60% 48% 48% / 55% 65% 45% 55%;
+            background: linear-gradient(135deg, #e3f6fd 0%, #d6e3ff 55%, #fbe3f6 100%);
+            /* 六邊形鑽石感 */
+            clip-path: polygon(50% 0%,
+                    /* 上尖 */
+                    90% 20%,
+                    /* 右上 */
+                    100% 60%,
+                    /* 右中 */
+                    80% 100%,
+                    /* 右下 */
+                    20% 100%,
+                    /* 左下 */
+                    0% 60%,
+                    /* 左中 */
+                    10% 20%
+                    /* 左上 */
+                );
             box-shadow:
-                0 4px 18px 0 rgba(166, 180, 255, 0.18),
-                0 1.5px 8px #e0e7ff,
-                0 0 40px 12px rgba(168, 237, 234, 0.18),
-                0 0 60px 18px rgba(254, 214, 227, 0.13);
+                0 0 0 3px #c7d6ff44,
+                /* 柔和外框線條 */
+                0 4px 18px 0 rgba(166, 180, 255, 0.10),
+                0 1.5px 8px #e0e7ff88,
+                0 0 40px 12px rgba(168, 237, 234, 0.10),
+                0 0 60px 18px rgba(254, 214, 227, 0.08);
             margin-bottom: 22px;
-            width: 320px;
-            height: 100px;
+            width: 280px;
+            height: 120px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -156,7 +173,24 @@
             margin-right: auto;
             padding: 0;
             will-change: box-shadow, transform;
-            filter: drop-shadow(0 0 18px #a8edea88) drop-shadow(0 0 24px #fed6e388);
+            filter: drop-shadow(0 0 12px #a8edea44) drop-shadow(0 0 18px #fed6e344);
+            /* 鑽石光澤效果 */
+            overflow: hidden;
+        }
+
+        ul.type-list li::before {
+            content: "";
+            position: absolute;
+            top: 18px;
+            left: 40px;
+            width: 60%;
+            height: 38%;
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.08) 100%);
+            opacity: 0.7;
+            transform: skew(-18deg, -8deg);
+            pointer-events: none;
+            border-radius: 24px;
+            filter: blur(2px);
         }
 
         ul.type-list li:hover {
@@ -263,7 +297,7 @@
             新增、編輯或刪除，打造專屬成長目標！
         </div>
         <div style="font-size: 0.3em;">
-            
+
         </div>
         <div class="add-form">
             <input type="text" id="newTypeName" placeholder="New skills..." style="font-size: 0.1em;">

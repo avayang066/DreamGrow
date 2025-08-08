@@ -139,8 +139,8 @@
 
 <body>
     <div class="container">
-        <div class="dream-bg">🌙</div>
-        <h1>D</h1>
+        <div class="dream-bg">🌙🌙🌙🌙🌙🌙🌙🌙</div>
+        <h1>˙３˙</h1>
         <div class="dream-desc" style="font-size: 0.1em">
             Everything you do can earn exp, level up, unlock achievements, and review your daily efforts and dreams!
         </div>
@@ -181,7 +181,7 @@
             <a href="{{ route('type') }}" class="btn">enter skill tree</a>
         </div>
         <div style="color:#888; font-size:0.1em;">
-            see how you growth
+            see your growth
             <br>
             <br>
             陪你一起記錄、回顧、升等！
