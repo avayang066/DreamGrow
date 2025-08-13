@@ -39,18 +39,18 @@ class TrackLogsController extends Controller
             ->getResponse();
     }
 
-    public function destroy(Request $request, $typeId, $trackable_item_id)
+    public function destroy(Request $request, $type_id, $trackable_item_id, $track_log_id)
     {
         $userId = $request->user()->id;
         return (new TrackLogService())
-            ->destroy($userId, $typeId, $trackable_item_id)
+            ->destroy($userId, $type_id, $trackable_item_id, $track_log_id)
             ->getResponse();
     }
 
-    public function show($trackable_item_id, $typeId, $track_log_id)
+    public function show($typeId, $trackable_item_id, $track_log_id)
     {
         return (new TrackLogService())
-            ->show($trackable_item_id, $typeId, $track_log_id)
+            ->show($typeId, $trackable_item_id, $track_log_id)
             ->getResponse();
     }
 }

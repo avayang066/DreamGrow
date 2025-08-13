@@ -30,8 +30,10 @@ class TrackableItem extends Model
         'type_id',
         'name',
         'streak_days_required',
+        'streak_days',
         'streak_bonus_exp',
-        'achievement_text'
+        'achievement_text',
+        'ifachieved'
     ];
 
     public function dataFormat()
@@ -43,8 +45,10 @@ class TrackableItem extends Model
             'exp' => $this->exp,
             'level' => $this->level,
             'streak_days_required' => $this->streak_days_required,
+            'streak_days' => $this->streak_days,
             'streak_bonus_exp' => $this->streak_bonus_exp,
-            'achievement_text' => $this->achievement_text
+            'achievement_text' => $this->achievement_text,
+            'ifachieved' => $this->ifachieved
         ];
     }
 }

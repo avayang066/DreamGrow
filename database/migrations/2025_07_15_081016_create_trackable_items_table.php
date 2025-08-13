@@ -19,8 +19,11 @@ return new class extends Migration
             $table->integer('exp')->default(0);
             $table->integer('level')->default(1);
             $table->integer('streak_days_required')->default(0);
+            $table->integer('streak_days')->default(0);
             $table->integer('streak_bonus_exp')->default(0);
             $table->string('achievement_text')->nullable();
+            $table->integer('ifachieved')->default(0);
+
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

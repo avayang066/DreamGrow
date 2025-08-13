@@ -18,7 +18,8 @@ class TrackLog extends Model
         'user_id',
         'trackable_item_id',
         'content',
-        'exp_gained'
+        'exp_gained',
+        'created_at'
     ];
 
 

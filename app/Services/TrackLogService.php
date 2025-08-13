@@ -6,6 +6,7 @@ use App\Models\Type;
 use App\Models\TrackLog;
 use App\Models\TrackableItem;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class TrackLogService
 {
@@ -66,53 +67,87 @@ class TrackLogService
         $trackLogs->save();
 
         $trackableItem = TrackableItem::find($trackable_item_id);
-        $trackableItem->exp += $trackLogs->exp_gained; // 累加本次 exp_gained
 
-        $achievement_message = null; // 預設 null 這樣如果沒有達成成就就不會回傳訊息
+        $this->updateExpAndLevel($trackableItem, $trackLogs->exp_gained);
+        $this->updateAchievement($trackableItem);
 
-        // $daysInTrackLog = TrackLog::where('trackable_item_id', $trackable_item_id)->count();
+        $this->response = [
+            'track_log' => $trackLogs,
+            'achievement_message' => $trackableItem->ifachieved ? ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'] : null
+        ];
 
-        // if ($daysInTrackLog == $trackableItem->streak_days_required) {
-        //     $trackableItem->exp += $trackableItem->streak_bonus_exp;
-        //     $achievement_message = ['message' => 'Get the achievement ' . $trackableItem->achievement_text .'！'];
-        // }
+        return $this;
+    }
 
-        // 取得最近 N 天日期
+    private function updateExpAndLevel(TrackableItem $item, $expChange)
+    {
+        $item->exp += $expChange;
+        // 處理升級
+        while ($item->exp >= 30) {
+            $item->level += 1;
+            $item->exp -= 30;
+        }
+        // 處理降級
+        while ($item->exp < 0) {
+            if ($item->level > 1) {
+                $item->level -= 1;
+                $item->exp += 30;
+            } else {
+                $item->exp = 0;
+                break;
+            }
+        }
+        $item->save();
+    }
+
+    // 判斷連續天數成就
+    private function updateAchievement(TrackableItem $item)
+    {
+        $requiredDays = $item->streak_days_required;
+        $dates = [];
+        for ($i = 0; $i < $requiredDays; $i++) {
+            $dates[] = Carbon::today()->subDays($i)->format('Y-m-d');
+        }
+        $logDates = TrackLog::where('trackable_item_id', $item->id)
+            ->whereDate('created_at', '>=', Carbon::today()->subDays($requiredDays - 1))
+            ->selectRaw('DATE(created_at) as log_date')
+            ->groupBy('log_date')
+            ->pluck('log_date')
+            ->toArray();
+        $item->ifachieved = !array_diff($dates, $logDates) ? 1 : 0;
+        $item->save();
+    }
+
+
+    private function checkStreakAchievement($trackableItem)
+    {
+        // 取得需要達成成就的「連續天數」
         $requiredDays = $trackableItem->streak_days_required;
+        // 產生最近 N 天（含今天）的日期陣列
         $dates = [];
         for ($i = 0; $i < $requiredDays; $i++) {
             $dates[] = Carbon::today()->subDays($i)->format('Y-m-d');
         }
 
-        // 查詢這些日期是否每天有 log
-        $logDates = TrackLog::where('trackable_item_id', $trackable_item_id)
-        ->whereDate('created_at', '>=', Carbon::today()->subDays($requiredDays - 1))
-        ->select(DB::raw('Date(created_at) as log_date'))
-        ->groupBy('log_date')
-        ->pluck('log_date')
-        ->toArray();
+        // 查詢資料庫，取得這 N 天內有 log 的所有日期（去重複）
+        $logDates = TrackLog::where('trackable_item_id', $trackableItem->id)
+            ->whereDate('created_at', '>=', Carbon::today()->subDays($requiredDays - 1))
+            ->select(DB::raw('Date(created_at) as log_date'))
+            ->groupBy('log_date')
+            ->pluck('log_date')
+            ->toArray();
 
-        // 檢查是否每一天都有 Log
+        // 判斷 $dates 陣列裡的每一天，是否都在 $logDates 裡（也就是這 N 天每天都有 log）
         $allDaysLogged = !array_diff($dates, $logDates);
 
         if ($allDaysLogged) {
             $trackableItem->exp += $trackableItem->streak_bonus_exp;
-            $achievement_message = ['message' => 'Get the achievement ' . $trackableItem->achievement_text .'！'];
+            $trackableItem->ifachieved = 1;
+            $trackableItem->save();
+            return ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'];
         }
 
-        while ($trackableItem->exp >= 30) {
-            $trackableItem->level += 1;
-            $trackableItem->exp = 0;
-        }
-
-        $trackableItem->save();
-
-        $this->response = [
-            'track_log' => $trackLogs,
-            'achievement_message' => $achievement_message
-        ];
-
-        return $this;
+        return null;
     }
 
     public function update($userId, $request, $typeId, $trackable_item_id, $track_log_id)
@@ -140,22 +175,35 @@ class TrackLogService
         return $this;
     }
 
-    public function destroy($userId, $typeId, $trackable_item_id)
+    public function destroy($userId, $type_id, $trackable_item_id, $track_log_id)
     {
-        $trackableItem = TrackLog::where('user_id', $userId)
-            ->where('type_id', $typeId)
+        $trackLog = TrackLog::where('user_id', $userId)
             ->where('trackable_item_id', $trackable_item_id)
+            ->where('id', $track_log_id)
             ->first();
-        if (!$trackableItem) {
+
+        if (!$trackLog) {
             $this->response = ['message' => 'Trackable item not found'];
             return $this;
         }
 
-        $trackableItem->delete();
+        // 取得對應的 TrackableItem
+        $trackableItem = TrackableItem::find($trackable_item_id);
+
+        $trackLog->delete();
+
+        $this->updateExpAndLevel($trackableItem, -$trackLog->exp_gained);
+        $this->updateAchievement($trackableItem);
+
+        $this->response = [
+            'track_log' => $trackLog,
+            'achievement_message' => $trackableItem->ifachieved ? ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'] : null
+        ];
+
         return $this;
     }
 
-    public function show($trackable_item_id, $typeId, $track_log_id)
+    public function show($typeId, $trackable_item_id, $track_log_id)
     {
         $trackLog = TrackLog::where('trackable_item_id', $trackable_item_id)
             ->where('type_id', $typeId)

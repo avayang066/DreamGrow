@@ -163,7 +163,7 @@
             transition: background 0.2s;
         }
 
-        .dream-action-btns .del {
+        .dream-action-btns .del, .del-log {
             background: #e74c3c;
         }
 
@@ -185,7 +185,7 @@
         }
 
         /* 彈窗 */
-        #editItemModal {
+        /* #editItemModal {
             font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             display: none;
             position: fixed;
@@ -210,7 +210,7 @@
         #editItemModal h3 {
             font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             color: #6c63ff;
-        }
+        } */
 
         .add-log-btn {
             font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
@@ -228,6 +228,7 @@
         }
 
         @media (max-width: 470px) {
+
             .dream-item-name,
             .dream-item-achievement,
             {
@@ -258,7 +259,7 @@
     </div>
 
     <!-- 編輯彈窗 -->
-    <div id="editItemModal">
+    {{-- <div id="editItemModal">
         <div class="modal-content">
             <h3 style="font-size: 1.2em;">Edit Sub-item</h3>
             Name: <input type="text" id="editItemName" placeholder="Name" class="dream-input"><br><br>
@@ -270,7 +271,7 @@
             <button id="saveEditBtn" class="btn">Save</button>
             <button id="cancelEditBtn" class="btn" style="background:#ccc;color:#333;">Cancel</button>
         </div>
-    </div>
+    </div> --}}
 
     <script>
         // 取得使用者名稱
@@ -294,16 +295,14 @@
         }
         const typeId = getTypeIdFromUrl();
 
-        let editingItemId = null;
+        // let editingItemId = null;
 
         function loadTypeName() {
-            console.log('typeId:', typeId);
             $.ajax({
                 url: `/api/type/${typeId}`,
                 method: 'GET',
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
                 success: function (type) {
-                    console.log('type api result:', type);
                     $('#typeTitle').html(`${$('<div>').text(type.name).html()}`);
                 }
             });
@@ -324,14 +323,13 @@
                     items.forEach(item => {
                         html += `<li style="position:relative;">
                     <span class="dream-item-info" style="font-size: 1.2em;">
-                        <b><span class="dream-item-name">${$('<div>').text(item.name).html()}</span></b>
-                        <br>Level:${item.level || '-'}
-                        <br>Streak Days:${item.streak_days_required || '-'}
-                        <br>Bonus EXP:${item.streak_bonus_exp || '-'}
-                        <br>Achievement:<span class="dream-item-achievement">${item.achievement_text || '-'}</span>
+                        <b><span class="dream-item-name">${$('<div>').text(item.name).html()} | Lv:${item.level || '-'}</span></b>
+                            <br>
+                            <span class="dream-item-exp">Exp:${item.exp}</span>
+                        <br>Streak Days:${item.streak_days_required || '-'} / Bonus EXP:${item.streak_bonus_exp || '-'}
+                        <br>Achievement:<span class="dream-item-achievement">${item.achievement_text || '-'}${item.ifachieved == 1 ? ' 🏆' : ''}</span>
                     </span>
                     <span class="dream-action-btns">
-                        <button class="edit" data-id="${item.id}">Edit</button>
                         <button class="del" data-id="${item.id}">Delete</button>
                     </span>
                     <span class="calendar-icon" data-id="${item.id}" style="margin-left:12px;cursor:pointer;font-size:1.6em;vertical-align:middle;">📅</span>
@@ -365,8 +363,22 @@
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
                 data: { date, content, exp },
-                success: function () {
+                success: function (res) {
                     $popup.find(`.calendar-date-btn[data-date="${date}"]`).click();
+
+                    // 顯示成就訊息在 calendar-popup 的最上方
+                    if (res.achievement_message) {
+                        $popup.prepend(
+                            `<div class="achievement-toast" style="color:#e67e22;font-size:1.5em;margin-bottom:8px;">
+                            🏆 ${res.achievement_message.message}
+                             </div>`
+                        );
+                        // 可選：幾秒後自動消失
+                        setTimeout(function () {
+                            $popup.find('.achievement-toast').fadeOut(500, function () { $(this).remove(); });
+                        }, 3000);
+                    }
+
                     $popup.find('.add-log-content').val('');
                     $popup.find('.add-log-exp').val('');
                 },
@@ -455,6 +467,8 @@
                 $calendar.find('.calendar-full').html(calendarHtml);
                 $calendar.find('.calendar-logs').html('');
             });
+
+
         }
 
         // 點擊日曆圖示，顯示完整日曆彈窗
@@ -500,6 +514,7 @@
                     logs.filter(log => log.created_at.substr(0, 10) === date).forEach(log => {
                         logsHtml += `<div style="background:#fff;border-radius:8px;padding:6px 10px;margin-bottom:6px;box-shadow:0 1px 6px #e0e7ff;display:flex;justify-content:space-between;align-items:center;">
                     <span class="calendar-log-content">content: ${log.content} / exp: ${log.exp_gained}</span>
+                    <button class="del-log" data-logid="${log.id}" data-id="${log.trackable_item_id}">Delete</button>
                 </div>`;
                     });
                     $popup.find('.calendar-logs').html(logsHtml);
@@ -530,51 +545,9 @@
                     alert(xhr.responseJSON?.message || 'Add failed');
                 }
             });
-        });
+        })
 
-        // 編輯（開啟彈窗）
-        $('#itemList').on('click', '.edit', function () {
-            let id = $(this).data('id');
-            editingItemId = id;
-            $.ajax({
-                url: `/api/type/${typeId}/trackable-item/${id}`,
-                method: 'GET',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                success: function (item) {
-                    $('#editItemName').val(item.name);
-                    $('#editStreakDaysRequired').val(item.streak_days_required);
-                    $('#editStreakBonusExp').val(item.streak_bonus_exp);
-                    $('#editAchievementText').val(item.achievement_text);
-                    $('#editItemModal').show();
-                }
-            });
-        });
-
-        // 編輯儲存
-        $('#saveEditBtn').click(function () {
-            let name = $('#editItemName').val();
-            let streak_days_required = $('#editStreakDaysRequired').val();
-            let streak_bonus_exp = $('#editStreakBonusExp').val();
-            let achievement_text = $('#editAchievementText').val();
-            $.ajax({
-                url: `/api/type/${typeId}/trackable-item/${editingItemId}`,
-                method: 'PUT',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                data: { name, streak_days_required, streak_bonus_exp, achievement_text },
-                success: function () {
-                    $('#editItemModal').hide();
-                    loadItems();
-                },
-                error: function (xhr) {
-                    alert(xhr.responseJSON?.message || 'Update failed');
-                }
-            });
-        });
-        $('#cancelEditBtn').click(function () {
-            $('#editItemModal').hide();
-        });
-
-        // 刪除
+        // 刪除 trackableItem
         $('#itemList').on('click', '.del', function () {
             if (!confirm('Are you sure to delete this item?')) return;
             let id = $(this).data('id');
@@ -589,10 +562,23 @@
             });
         });
 
-        // 初始載入
-        $(function () {
-            loadItems();
+        // 刪除 log
+        $('#itemList').on('click', '.del-log', function () {
+            if (!confirm('Are you sure to delete this log?')) return;
+            let itemId = $(this).data('id');
+            let logId = $(this).data('logid');
+            console.log('itemId:', itemId, 'logId:', logId);
+            $.ajax({
+                url: `/api/type/${typeId}/trackable-item/${itemId}/track-log/${logId}`,
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                success: loadItems,
+                error: function (xhr) {
+                    alert(xhr.responseJSON?.message || 'Delete failed');
+                }
+            });
         });
+
     </script>
 </body>
 
