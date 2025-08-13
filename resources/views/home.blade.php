@@ -6,16 +6,23 @@
     <meta charset="UTF-8">
     <title>歡迎頁面</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Quicksand:wght@400;700&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        body {
+        @font-face {
+            font-family: 'Zpix';
+            src: url('/fonts/zpix.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
 
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            /* font-family: 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif; */
-            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+        body {
+            /* font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif; */
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
@@ -37,9 +44,9 @@
         }
 
         .dream-navbar .nav-home {
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             color: #6c63ff;
             text-decoration: none;
-            font-weight: bold;
             font-size: 1.08em;
             padding: 4px 10px;
             border-radius: 6px;
@@ -52,6 +59,7 @@
         }
 
         .dream-navbar .nav-user {
+            font-family: 'Zpix', 'VT323', 'Press Start 2P', 'Noto Sans TC', Arial, sans-serif;
             color: #333;
             font-size: 1em;
             padding: 4px 10px;
@@ -86,8 +94,8 @@
         }
 
         .btn-group {
-            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
-            font-size: 0.1em;
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-size: 1.2em;
             display: flex;
             justify-content: center;
             gap: 18px;
@@ -95,7 +103,7 @@
         }
 
         .btn {
-            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             font-size: 0.1em;
             padding: 12px 32px;
             border: none;
@@ -129,6 +137,25 @@
         .feature-list li {
             margin-bottom: 10px;
         }
+
+        .feature-list-chinese {
+            text-align: left;
+            margin: 0 auto 24px auto;
+            max-width: 480px;
+            color: #444;
+            font-size: 1em;
+            font-family: 'Zpix', 'VT323', 'Press Start 2P', 'Noto Sans TC', Arial, sans-serif;
+        }
+
+        .feature-list-chinese li {
+            margin-bottom: 10px;
+        }
+
+        .last-word {
+            font-family: 'Zpix', 'VT323', 'Press Start 2P', 'Noto Sans TC', Arial, sans-serif;
+            font-size: 0.8em;
+            color: #333;
+        }
     </style>
 </head>
 
@@ -139,20 +166,23 @@
 
 <body>
     <div class="container">
-        <div class="dream-bg">🌙🌙🌙🌙🌙🌙🌙🌙</div>
-        <h1>˙３˙</h1>
-        <div class="dream-desc" style="font-size: 0.1em">
-            Everything you do can earn exp, level up, unlock achievements, and review your daily efforts and dreams!
+        <div class="dream-bg">🌙 🌙 🌙</div>
+        <h1>˙3˙</h1>
+        <div class="dream-desc" style="font-size: 1.5em">
+            Everything you do can earn exp, level up, unlock achievements,
+            <br>and review your daily efforts and dreams!
         </div>
-        <ul class="feature-list">
-            <li>自訂類型與項目，打造夢想目標</li>
-            <li>項目每新增一次內容獲得<b> exp</b></li>
-            <li>累積<b> 30exp </b>即可升等</li>
-            <li>可自訂項目連續幾天獲得經驗值，解鎖成就並獲得額外經驗</li>
-            <li>點擊項目，可展開回顧每日輸入內容</li>
-            <li>會員註冊、登入，專屬個人夢想成長紀錄</li>
+        <ul style="font-size: 1em">
+            <span class="feature-list-chinese">
+                <li>自訂類型與項目，打造夢想目標</li>
+                <li>項目每新增一次內容獲得<b> exp</b></li>
+                <li>累積<b> 30exp </b>即可升等</li>
+                <li>可自訂項目連續幾天獲得經驗值，解鎖成就並獲得額外經驗</li>
+                <li>點擊項目，可展開回顧每日輸入內容</li>
+                <li>會員註冊、登入，專屬個人夢想成長紀錄</li>
+            </span>
             <br>
-            <span style="font-size: 0.1em">
+            <span class="feature-list" style="font-size: 1.2em">
                 ✨ 1. Customize types and items to build your dream goals
                 <br>
                 <br>
@@ -180,11 +210,13 @@
             </form>
             <a href="{{ route('type') }}" class="btn">enter skill tree</a>
         </div>
-        <div style="color:#888; font-size:0.1em;">
+        <div style="color:#888; font-size:1em;">
             see your growth
             <br>
             <br>
-            陪你一起記錄、回顧、升等！
+            <span class="last-word">
+                陪你一起記錄、回顧、升等！
+            </span>
         </div>
     </div>
 </body>
@@ -209,7 +241,7 @@
                 $('#navUserName').text(user.name);
             },
             error: function () {
-                $('#navUserName').text('未登入');
+                $('#navUserName').text('Unknown');
             }
         });
 
@@ -229,7 +261,7 @@
                         localStorage.removeItem('token');
                         location.reload();
                     } else {
-                        alert('登出失敗');
+                        alert('Logout failed');
                     }
                 }
             });

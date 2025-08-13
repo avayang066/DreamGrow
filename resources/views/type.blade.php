@@ -5,14 +5,23 @@
     <meta charset="UTF-8">
     <title>類型管理 | DreamGrow</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Quicksand:wght@400;700&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'Zpix';
+            src: url('/fonts/zpix.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            /* font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif; */
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
@@ -25,8 +34,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            /* 左右分散 */
-            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             box-shadow: 0 2px 8px #e0e7ff;
             font-size: 1.08em;
             margin-bottom: 18px;
@@ -35,9 +42,9 @@
         }
 
         .dream-navbar .nav-home {
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             color: #6c63ff;
             text-decoration: none;
-            font-weight: bold;
             font-size: 1.08em;
             padding: 4px 10px;
             border-radius: 6px;
@@ -50,6 +57,7 @@
         }
 
         .dream-navbar .nav-user {
+            font-family: 'Zpix', 'VT323', 'Press Start 2P', 'Noto Sans TC', Arial, sans-serif;
             color: #333;
             font-size: 1em;
             padding: 4px 10px;
@@ -70,7 +78,7 @@
         }
 
         h2 {
-            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             font-size: 2em;
             color: #6c63ff;
             margin-bottom: 18px;
@@ -90,7 +98,7 @@
         }
 
         .add-form input {
-            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             flex: 1;
             padding: 8px;
             border: 1px solid #ccc;
@@ -99,7 +107,7 @@
         }
 
         .btn {
-            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             font-size: 0.1em;
             padding: 8px 20px;
             border: none;
@@ -154,7 +162,6 @@
                 );
             box-shadow:
                 0 0 0 3px #c7d6ff44,
-                /* 柔和外框線條 */
                 0 4px 18px 0 rgba(166, 180, 255, 0.10),
                 0 1.5px 8px #e0e7ff88,
                 0 0 40px 12px rgba(168, 237, 234, 0.10),
@@ -221,6 +228,7 @@
         }
 
         .type-name {
+            font-family: 'Zpix', 'VT323', 'Press Start 2P', 'Noto Sans TC', Arial, sans-serif;
             font-size: 1.3em;
             color: #333;
             word-break: break-all;
@@ -229,6 +237,7 @@
         }
 
         .action-btns {
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             position: absolute;
             bottom: 12px;
             left: 0;
@@ -242,11 +251,13 @@
         }
 
         ul.type-list li:hover .action-btns {
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             opacity: 1;
             pointer-events: auto;
         }
 
         .action-btns button {
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             background: #fff;
             color: #6c63ff;
             border: 1.5px solid #d1d5fa;
@@ -291,17 +302,17 @@
 
 <body>
     <div class="container">
-        <a href="/home" class="back-link">← back</a>
+        <a href="/home" class="back-link" style="font-size: 1.5em;">← back</a>
         <h2>DreamTree</h2>
-        <div class="desc" style="font-size: 0.5em;">
-            新增、編輯或刪除，打造專屬成長目標！
+        <div class="desc" style="font-size: 1em;">
+            Create, edit or delete your personal growth goals!
         </div>
         <div style="font-size: 0.3em;">
 
         </div>
         <div class="add-form">
-            <input type="text" id="newTypeName" placeholder="New skills..." style="font-size: 0.1em;">
-            <button id="addTypeBtn" class="btn">create</button>
+            <input type="text" id="newTypeName" placeholder="New skills..." style="font-size: 1.5em;">
+            <button id="addTypeBtn" class="btn" style="font-size: 1.5em;">create</button>
         </div>
         <ul class="type-list" id="typeList"></ul>
     </div>
@@ -352,15 +363,15 @@
                             html += `<li>
                         <span class="type-name">${$('<div>').text(type.name).html()}</span>
                         <span class="action-btns">
-                            <button class="edit" data-id="${type.id}" data-name="${type.name}">編輯</button>
-                            <button class="del" data-id="${type.id}">刪除</button>
+                            <button class="edit" data-id="${type.id}" data-name="${type.name}">Edit</button>
+                            <button class="del" data-id="${type.id}">Delete</button>
                         </span>
                     </li>`;
                         });
                         $('#typeList').html(html);
                     },
                     error: function () {
-                        $('#typeList').html('<li>載入失敗，請重新整理。</li>');
+                        $('#typeList').html('<li>Load failed, please refresh.</li>');
                     }
                 });
             }
@@ -368,7 +379,7 @@
             // 新增 type
             $('#addTypeBtn').click(function () {
                 let name = $('#newTypeName').val().trim();
-                if (!name) return alert('請輸入名稱');
+                if (!name) return alert('Please enter a name');
                 $.ajax({
                     url: '/api/type/',
                     method: 'POST',
@@ -379,7 +390,7 @@
                         loadTypes();
                     },
                     error: function (xhr) {
-                        alert(xhr.responseJSON?.message || '新增失敗');
+                        alert(xhr.responseJSON?.message || 'create failed');
                     }
                 });
             });
@@ -395,7 +406,7 @@
 
             // 刪除 type
             $('#typeList').on('click', '.del', function () {
-                if (!confirm('確定要刪除嗎？')) return;
+                if (!confirm('Are you sure you want to delete this?')) return;
                 let id = $(this).data('id');
                 $.ajax({
                     url: '/api/type/' + id,
@@ -403,7 +414,7 @@
                     headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
                     success: loadTypes,
                     error: function (xhr) {
-                        alert(xhr.responseJSON?.message || '刪除失敗');
+                        alert(xhr.responseJSON?.message || 'Delete failed');
                     }
                 });
             });

@@ -7,13 +7,22 @@
     <meta charset="UTF-8">
     <title>註冊</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Quicksand:wght@400;700&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
+         @font-face {
+            font-family: 'Zpix';
+            src: url('/fonts/zpix.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            font-family: 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             margin: 0;
             padding: 0;
         }
@@ -26,8 +35,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            /* 左右分散 */
-            font-family: 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             box-shadow: 0 2px 8px #e0e7ff;
             font-size: 1.08em;
             margin-bottom: 18px;
@@ -36,9 +44,9 @@
         }
 
         .dream-navbar .nav-home {
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             color: #6c63ff;
             text-decoration: none;
-            font-weight: bold;
             font-size: 1.08em;
             padding: 4px 10px;
             border-radius: 6px;
@@ -51,6 +59,7 @@
         }
 
         .dream-navbar .nav-user {
+            font-family: 'Zpix', 'VT323', 'Press Start 2P', 'Noto Sans TC', Arial, sans-serif;
             color: #333;
             font-size: 1em;
             padding: 4px 10px;
@@ -71,6 +80,7 @@
         }
 
         h2 {
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             font-size: 2em;
             color: #6c63ff;
             margin-bottom: 18px;
@@ -83,6 +93,7 @@
         }
 
         .form-group {
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             margin-bottom: 18px;
             text-align: left;
         }
@@ -103,6 +114,7 @@
         }
 
         .btn {
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             padding: 10px 32px;
             border: none;
             border-radius: 8px;
@@ -146,35 +158,35 @@
 </head>
 
 <nav class="dream-navbar">
-    <a href="/home" class="nav-home">🏠 回首頁</a>
+    <a href="/home" class="nav-home">Home</a>
     <span class="nav-user"><span id="navUserName">載入中...</span></span>
 </nav>
 
 <body>
     <div class="container">
-        <h2>註冊</h2>
+        <h2>Register</h2>
         <div class="desc">
-            開始記錄你的每一天！
+            Start recording your every day!
         </div>
         <div class="error-msg" id="errorMsg"></div>
         <div class="success-msg" id="successMsg"></div>
         <form id="registerForm" autocomplete="off">
             <div class="form-group">
-                <label for="name">暱稱</label>
+                <label for="name">Name</label>
                 <input type="text" id="name" name="name" required maxlength="255">
             </div>
             <div class="form-group">
-                <label for="email">電子郵件</label>
+                <label for="email">Email</label>
                 <input type="email" id="email" name="email" required maxlength="255">
             </div>
             <div class="form-group">
-                <label for="password">密碼</label>
+                <label for="password">Password</label>
                 <input type="password" id="password" name="password" required minlength="6">
             </div>
-            <button type="submit" class="btn">註冊</button>
+            <button type="submit" class="btn">Register</button>
         </form>
-        <a href="/login" class="back-link">已有帳號？登入</a>
-        <a href="/home" class="back-link" style="margin-left:10px;">回首頁</a>
+        <a href="/login" class="back-link" style="font-size:1.3em;">Already have an account? Log in</a>
+        <a href="/home" class="back-link" style="margin-left:10px; font-size:1.3em;">Back to Home</a>
     </div>
 
     <script>
@@ -189,7 +201,7 @@
                     $('#navUserName').text(user.name);
                 },
                 error: function () {
-                    $('#navUserName').text('未登入');
+                    $('#navUserName').text('unknown');
                 }
             });
 
@@ -202,7 +214,7 @@
                 var password = $('#password').val();
 
                 if (!name || !email || !password) {
-                    $('#errorMsg').text('請填寫所有欄位');
+                    $('#errorMsg').text('Please fill in all fields');
                     return;
                 }
 
@@ -216,13 +228,13 @@
                         password: password
                     },
                     success: function (res) {
-                        $('#successMsg').text('註冊成功，請登入！');
+                        $('#successMsg').text('Registration successful, please log in!');
                         setTimeout(function () {
                             window.location.href = '/login';
                         }, 1200);
                     },
                     error: function (xhr) {
-                        let msg = xhr.responseJSON?.message || '註冊失敗';
+                        let msg = xhr.responseJSON?.message || 'Registration failed';
                         if (xhr.responseJSON?.errors) {
                             msg += '：' + Object.values(xhr.responseJSON.errors).join('、');
                         }
