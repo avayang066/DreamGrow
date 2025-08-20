@@ -303,7 +303,7 @@
 <body>
     <div class="container">
         <a href="/home" class="back-link" style="font-size: 1.5em;">← back</a>
-        <h2>DreamTree</h2>
+        {{-- <h2>DreamTree</h2> --}}
         <div class="desc" style="font-size: 1em;">
             Create, edit or delete your personal growth goals!
         </div>

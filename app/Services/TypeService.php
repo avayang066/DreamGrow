@@ -3,11 +3,24 @@
 namespace App\Services;
 
 use App\Models\Type;
+use App\Traits\RulesTrait;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 
 class TypeService
 {
+    use RulesTrait;
+    
+    protected $rules = [
+        'store' => [
+            'name' => 'required|string|max:255',
+        ],
+        'update' => [
+            'name' => 'required|string|max:255',
+        ],
+    ];
+
     private $response;
     private $request;
 
@@ -90,20 +103,20 @@ class TypeService
         return $this;
     }
 
-public function show($userId, $typeId)
-{
-    $type = Type::where('id', $typeId)
-        ->where('user_id', $userId)
-        ->first();
+    public function show($userId, $typeId)
+    {
+        $type = Type::where('id', $typeId)
+            ->where('user_id', $userId)
+            ->first();
 
-    if (!$type) {
-        $this->response = ['message' => '類型不存在'];
+        if (!$type) {
+            $this->response = ['message' => '類型不存在'];
+            return $this;
+        }
+
+        $this->response = $type->dataFormat();
         return $this;
     }
-
-    $this->response = $type->dataFormat();
-    return $this;
-}
 
     public function getResponse()
     {

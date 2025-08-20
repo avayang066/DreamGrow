@@ -174,12 +174,12 @@
         </div>
         <ul style="font-size: 1em">
             <span class="feature-list-chinese">
-                <li>自訂類型與項目，打造夢想目標</li>
+                <li>自訂類型與項目，打造目標</li>
                 <li>項目每新增一次內容獲得<b> exp</b></li>
                 <li>累積<b> 30exp </b>即可升等</li>
-                <li>可自訂項目連續幾天獲得經驗值，解鎖成就並獲得額外經驗</li>
+                <li>自訂項目連續幾天獲得經驗值，解鎖成就並獲得額外經驗</li>
                 <li>點擊項目，可展開回顧每日輸入內容</li>
-                <li>會員註冊、登入，專屬個人夢想成長紀錄</li>
+                <li>會員註冊、登入，取得個人成長紀錄</li>
             </span>
             <br>
             <span class="feature-list" style="font-size: 1.2em">
@@ -211,11 +211,11 @@
             <a href="{{ route('type') }}" class="btn">enter skill tree</a>
         </div>
         <div style="color:#888; font-size:1em;">
-            see your growth
+            {{-- see your growth --}}
             <br>
             <br>
             <span class="last-word">
-                陪你一起記錄、回顧、升等！
+                {{-- 陪你一起記錄、回顧、升等！ --}}
             </span>
         </div>
     </div>

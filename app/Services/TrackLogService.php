@@ -70,15 +70,19 @@ class TrackLogService
 
         $this->updateExpAndLevel($trackableItem, $trackLogs->exp_gained);
         $this->updateAchievement($trackableItem);
+        $currentStreak = $this->getCurrentStreak($trackableItem);
 
         $this->response = [
             'track_log' => $trackLogs,
+            'current_streak' => $currentStreak,
             'achievement_message' => $trackableItem->ifachieved ? ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'] : null
         ];
 
         return $this;
     }
 
+    // exp 增加減少和升等與降等
+    // 這裡的 exp_change 是正數或負數，正數表示
     private function updateExpAndLevel(TrackableItem $item, $expChange)
     {
         $item->exp += $expChange;
@@ -97,57 +101,74 @@ class TrackLogService
                 break;
             }
         }
+
         $item->save();
     }
 
-    // 判斷連續天數成就
-    private function updateAchievement(TrackableItem $item)
+    // 判斷需要的連續天數，已累積幾天
+    private function getCurrentStreak($trackableItem)
     {
-        $requiredDays = $item->streak_days_required;
-        $dates = [];
-        for ($i = 0; $i < $requiredDays; $i++) {
-            $dates[] = Carbon::today()->subDays($i)->format('Y-m-d');
-        }
-        $logDates = TrackLog::where('trackable_item_id', $item->id)
-            ->whereDate('created_at', '>=', Carbon::today()->subDays($requiredDays - 1))
-            ->selectRaw('DATE(created_at) as log_date')
+        $logDates = TrackLog::where('trackable_item_id', $trackableItem->id)
+            ->select(DB::raw('Date(created_at) as log_date'))
             ->groupBy('log_date')
+            ->orderBy('log_date')
             ->pluck('log_date')
             ->toArray();
-        $item->ifachieved = !array_diff($dates, $logDates) ? 1 : 0;
-        $item->save();
+
+        if (empty($logDates)) {
+            return 0;
+        }
+
+        $streak = 1;
+        $maxStreak = 1;
+        $requiredDays = $trackableItem->streak_days_required;
+
+        // $logDates 是 tracklog 陣列 // 用 curr、prev 判斷是否有連續天數
+        for ($i = 1; $i < count($logDates); $i++) {
+            $prev = Carbon::parse($logDates[$i - 1]);
+            $curr = Carbon::parse($logDates[$i]);
+            if ($curr->diffInDays($prev) == 1) {
+                if ($streak <= $requiredDays) {
+                    $streak++;
+                    $maxStreak = max($maxStreak, $streak);
+                    TrackableItem::where('id', $trackableItem->id)->update(['streak_days' => $maxStreak]);
+                }
+            } else {
+                $streak = 1;
+            }
+        }
+        return $maxStreak;
     }
 
-
-    private function checkStreakAchievement($trackableItem)
+    // 判斷連續天數是否有獲得成就
+    private function updateAchievement($trackableItem)
     {
         // 取得需要達成成就的「連續天數」
         $requiredDays = $trackableItem->streak_days_required;
-        // 產生最近 N 天（含今天）的日期陣列
-        $dates = [];
-        for ($i = 0; $i < $requiredDays; $i++) {
-            $dates[] = Carbon::today()->subDays($i)->format('Y-m-d');
-        }
 
-        // 查詢資料庫，取得這 N 天內有 log 的所有日期（去重複）
+        // 取得所有 log 的日期（去重複，排序）
         $logDates = TrackLog::where('trackable_item_id', $trackableItem->id)
-            ->whereDate('created_at', '>=', Carbon::today()->subDays($requiredDays - 1))
+            // ->whereDate('created_at', '>=', Carbon::today()->subDays($requiredDays - 1))
             ->select(DB::raw('Date(created_at) as log_date'))
             ->groupBy('log_date')
             ->pluck('log_date')
             ->toArray();
 
-        // 判斷 $dates 陣列裡的每一天，是否都在 $logDates 裡（也就是這 N 天每天都有 log）
-        $allDaysLogged = !array_diff($dates, $logDates);
-
-        if ($allDaysLogged) {
-            $trackableItem->exp += $trackableItem->streak_bonus_exp;
-            $trackableItem->ifachieved = 1;
-            $trackableItem->save();
-            return ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'];
+        // 判斷是否有 N 天
+        $streak = 1;
+        for ($i = 1; $i < count($logDates); $i++) {
+            $prev = Carbon::parse($logDates[$i - 1]);
+            $curr = Carbon::parse($logDates[$i]);
+            if ($curr->diffInDays($prev) == 1) {
+                $streak++;
+                if ($streak >= $requiredDays) {
+                    $trackableItem->exp += $trackableItem->streak_bonus_exp;
+                    $trackableItem->ifachieved = 1;
+                    $trackableItem->save();
+                    return ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'];
+                }
+            }
         }
-
-        return null;
     }
 
     public function update($userId, $request, $typeId, $trackable_item_id, $track_log_id)
@@ -194,9 +215,11 @@ class TrackLogService
 
         $this->updateExpAndLevel($trackableItem, -$trackLog->exp_gained);
         $this->updateAchievement($trackableItem);
+        $currentStreak = $this->getCurrentStreak($trackableItem);
 
         $this->response = [
             'track_log' => $trackLog,
+            'current_streak' => $currentStreak,
             'achievement_message' => $trackableItem->ifachieved ? ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'] : null
         ];
 

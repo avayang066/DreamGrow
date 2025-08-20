@@ -163,7 +163,8 @@
             transition: background 0.2s;
         }
 
-        .dream-action-btns .del, .del-log {
+        .dream-action-btns .del,
+        .del-log {
             background: #e74c3c;
         }
 
@@ -183,34 +184,6 @@
         .dream-back-link:hover {
             text-decoration: underline;
         }
-
-        /* 彈窗 */
-        /* #editItemModal {
-            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
-            display: none;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.18);
-            z-index: 999;
-        }
-
-        #editItemModal .modal-content {
-            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
-            background: white;
-            padding: 32px;
-            border-radius: 18px;
-            max-width: 340px;
-            margin: 80px auto;
-            box-shadow: 0 4px 24px #ccc;
-        }
-
-        #editItemModal h3 {
-            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
-            color: #6c63ff;
-        } */
 
         .add-log-btn {
             font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
@@ -258,21 +231,6 @@
         <ul id="itemList" class="dream-item-list"></ul>
     </div>
 
-    <!-- 編輯彈窗 -->
-    {{-- <div id="editItemModal">
-        <div class="modal-content">
-            <h3 style="font-size: 1.2em;">Edit Sub-item</h3>
-            Name: <input type="text" id="editItemName" placeholder="Name" class="dream-input"><br><br>
-            Streak Days: <input type="number" id="editStreakDaysRequired" placeholder="Streak Days"
-                class="dream-input"><br><br>
-            Bonus EXP: <input type="number" id="editStreakBonusExp" placeholder="Bonus EXP" class="dream-input"><br><br>
-            Achievement Text: <input type="text" id="editAchievementText" placeholder="Achievement Text"
-                class="dream-input"><br><br>
-            <button id="saveEditBtn" class="btn">Save</button>
-            <button id="cancelEditBtn" class="btn" style="background:#ccc;color:#333;">Cancel</button>
-        </div>
-    </div> --}}
-
     <script>
         // 取得使用者名稱
         $.ajax({
@@ -293,9 +251,14 @@
             let match = window.location.pathname.match(/type\/(\d+)\/trackable-item/);
             return match ? match[1] : null;
         }
+
         const typeId = getTypeIdFromUrl();
 
-        // let editingItemId = null;
+        // 載入 typename & item
+        $(function () {
+            loadTypeName();
+            loadItems();
+        });
 
         function loadTypeName() {
             $.ajax({
@@ -307,10 +270,6 @@
                 }
             });
         }
-        $(function () {
-            loadTypeName();
-            loadItems(); // 你的子項目列表載入
-        });
 
         function loadItems() {
             $.ajax({
@@ -323,11 +282,12 @@
                     items.forEach(item => {
                         html += `<li style="position:relative;">
                     <span class="dream-item-info" style="font-size: 1.2em;">
-                        <b><span class="dream-item-name">${$('<div>').text(item.name).html()} | Lv:${item.level || '-'}</span></b>
+                        <b><span class="dream-item-name">${$('<div>').text(item.name).html()} |　Lv:${item.level || '-'}</span></b>
                             <br>
                             <span class="dream-item-exp">Exp:${item.exp}</span>
-                        <br>Streak Days:${item.streak_days_required || '-'} / Bonus EXP:${item.streak_bonus_exp || '-'}
-                        <br>Achievement:<span class="dream-item-achievement">${item.achievement_text || '-'}${item.ifachieved == 1 ? ' 🏆' : ''}</span>
+                        <br>Streak Days: ${item.streak_days_required || '-'}/${item.streak_days || '0' }
+                        <br>Bonus EXP:${item.streak_bonus_exp || '-'}
+                        <br>Achievement:<span class="dream-item-achievement">${item.achievement_text || '-'}${item.ifachieved == 1 ? ' 🏆🏆🏆' : ''}</span>
                     </span>
                     <span class="dream-action-btns">
                         <button class="del" data-id="${item.id}">Delete</button>
@@ -350,59 +310,71 @@
             });
         }
 
-        // 新增 TrackLog
-        $('#itemList').on('click', '.add-log-btn', function () {
-            let $popup = $(this).closest('.calendar-popup');
-            let itemId = $(this).data('item');
-            let date = $popup.find('.add-log-date').val();
-            let content = $popup.find('.add-log-content').val();
-            let exp = $popup.find('.add-log-exp').val();
-            if (!date || !content || !exp) return alert('請填寫完整');
+        // 新增 trackableItem
+        $('#addItemBtn').click(function () {
+            let name = $('#itemName').val().trim();
+            let streak_days_required = $('#streakDaysRequired').val();
+            let streak_bonus_exp = $('#streakBonusExp').val();
+            let achievement_text = $('#achievementText').val();
+            if (!name) return alert('Please enter a name');
             $.ajax({
-                url: `/api/type/${typeId}/trackable-item/${itemId}/track-log`,
+                url: `/api/type/${typeId}/trackable-item`,
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                data: { date, content, exp },
-                success: function (res) {
-                    $popup.find(`.calendar-date-btn[data-date="${date}"]`).click();
-
-                    // 顯示成就訊息在 calendar-popup 的最上方
-                    if (res.achievement_message) {
-                        $popup.prepend(
-                            `<div class="achievement-toast" style="color:#e67e22;font-size:1.5em;margin-bottom:8px;">
-                            🏆 ${res.achievement_message.message}
-                             </div>`
-                        );
-                        // 可選：幾秒後自動消失
-                        setTimeout(function () {
-                            $popup.find('.achievement-toast').fadeOut(500, function () { $(this).remove(); });
-                        }, 3000);
-                    }
-
-                    $popup.find('.add-log-content').val('');
-                    $popup.find('.add-log-exp').val('');
+                data: { name, streak_days_required, streak_bonus_exp, achievement_text },
+                success: function () {
+                    $('#itemName').val('');
+                    $('#streakDaysRequired').val('');
+                    $('#streakBonusExp').val('');
+                    $('#achievementText').val('');
+                    loadItems();
                 },
-                error: function () {
-                    alert('新增失敗');
+                error: function (xhr) {
+                    alert(xhr.responseJSON?.message || 'Add failed');
+                }
+            });
+        })
+
+        // 刪除 trackableItem
+        $('#itemList').on('click', '.del', function () {
+            if (!confirm('Are you sure to delete this item?')) return;
+            let id = $(this).data('id');
+            $.ajax({
+                url: `/api/type/${typeId}/trackable-item/${id}`,
+                method: 'DELETE',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                success: loadItems,
+                error: function (xhr) {
+                    alert(xhr.responseJSON?.message || 'Delete failed');
                 }
             });
         });
 
-        // 刪除 TrackLog
-        $('#itemList').on('click', '.remove-log-btn', function () {
+        // 點擊日曆圖示，顯示完整日曆彈窗
+        $('#itemList').on('click', '.calendar-icon', function () {
+            let $calendar = $(this).siblings('.calendar-popup');
+            $('.calendar-popup').not($calendar).hide(); // 關閉其他
+            $calendar.toggle();
             let itemId = $(this).data('id');
-            let logId = $(this).data('logid');
-            let $btn = $(this);
-            $.ajax({
-                url: `/api/type/${typeId}/trackable-item/${itemId}/track-log/${logId}`,
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                success: function () {
-                    $btn.parent().remove();
-                },
-                error: function () {
-                    alert('Delete failed');
-                }
+            let today = new Date();
+            let year = today.getFullYear();
+            let month = today.getMonth() + 1;
+
+            // 使用新的 renderCalendar
+            renderCalendar(year, month, itemId, $calendar);
+
+            // 切換月份
+            $calendar.off('click', '.cal-prev').on('click', '.cal-prev', function () {
+                let itemId = $(this).data('item');
+                month--;
+                if (month < 1) { month = 12; year--; }
+                renderCalendar(year, month, itemId, $calendar);
+            });
+            $calendar.off('click', '.cal-next').on('click', '.cal-next', function () {
+                let itemId = $(this).data('item');
+                month++;
+                if (month > 12) { month = 1; year++; }
+                renderCalendar(year, month, itemId, $calendar);
             });
         });
 
@@ -415,7 +387,7 @@
             });
         });
 
-        // 取得該 trackableItem 所有 tracklog日期（只要日期，不要全部log）
+        // 取得該 trackableItem 所有 tracklog 日期（只要日期，不要全部log），給日曆紅點使用
         function getTracklogDates(itemId, callback) {
             $.ajax({
                 url: `/api/type/${typeId}/trackable-item/${itemId}/track-log`,
@@ -467,37 +439,7 @@
                 $calendar.find('.calendar-full').html(calendarHtml);
                 $calendar.find('.calendar-logs').html('');
             });
-
-
         }
-
-        // 點擊日曆圖示，顯示完整日曆彈窗
-        $('#itemList').on('click', '.calendar-icon', function () {
-            let $calendar = $(this).siblings('.calendar-popup');
-            $('.calendar-popup').not($calendar).hide(); // 關閉其他
-            $calendar.toggle();
-            let itemId = $(this).data('id');
-            let today = new Date();
-            let year = today.getFullYear();
-            let month = today.getMonth() + 1;
-
-            // 使用新的 renderCalendar
-            renderCalendar(year, month, itemId, $calendar);
-
-            // 切換月份
-            $calendar.off('click', '.cal-prev').on('click', '.cal-prev', function () {
-                let itemId = $(this).data('item');
-                month--;
-                if (month < 1) { month = 12; year--; }
-                renderCalendar(year, month, itemId, $calendar);
-            });
-            $calendar.off('click', '.cal-next').on('click', '.cal-next', function () {
-                let itemId = $(this).data('item');
-                month++;
-                if (month > 12) { month = 1; year++; }
-                renderCalendar(year, month, itemId, $calendar);
-            });
-        });
 
         // 點擊日期，顯示該日所有 TrackLog（只顯示該日）
         $('#itemList').on('click', '.calendar-date-btn', function () {
@@ -522,47 +464,47 @@
             });
         });
 
-        // 新增
-        $('#addItemBtn').click(function () {
-            let name = $('#itemName').val().trim();
-            let streak_days_required = $('#streakDaysRequired').val();
-            let streak_bonus_exp = $('#streakBonusExp').val();
-            let achievement_text = $('#achievementText').val();
-            if (!name) return alert('Please enter a name');
+        // 新增 TrackLog
+        $('#itemList').on('click', '.add-log-btn', function () {
+            let $popup = $(this).closest('.calendar-popup');
+            let itemId = $(this).data('item');
+            let created_at = $popup.find('.add-log-date').val();
+            let content = $popup.find('.add-log-content').val();
+            let exp_gained = $popup.find('.add-log-exp').val();
+            if (!created_at || !content || !exp_gained) return alert('請填寫完整');
             $.ajax({
-                url: `/api/type/${typeId}/trackable-item`,
+                url: `/api/type/${typeId}/trackable-item/${itemId}/track-log`,
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                data: { name, streak_days_required, streak_bonus_exp, achievement_text },
-                success: function () {
-                    $('#itemName').val('');
-                    $('#streakDaysRequired').val('');
-                    $('#streakBonusExp').val('');
-                    $('#achievementText').val('');
+                data: { created_at, content, exp_gained },
+                success: function (res) {
+                    $popup.find(`.calendar-date-btn[data-date="${created_at}"]`).click();
+
+                    // 顯示成就訊息在 calendar-popup 的最上方
+                    if (res.achievement_message) {
+                        $popup.prepend(
+                            `<div class="achievement-toast" style="color:#e67e22;font-size:1.5em;margin-bottom:8px;">
+                            🏆 ${res.achievement_message.message}
+                             </div>`
+                        );
+                        // 可選：幾秒後自動消失
+                        setTimeout(function () {
+                            $popup.find('.achievement-toast').fadeOut(500, function () { $(this).remove(); });
+                        }, 3000);
+                    }
+
+                    $popup.find('.add-log-content').val('');
+                    $popup.find('.add-log-exp').val('');
+
                     loadItems();
                 },
-                error: function (xhr) {
-                    alert(xhr.responseJSON?.message || 'Add failed');
-                }
-            });
-        })
-
-        // 刪除 trackableItem
-        $('#itemList').on('click', '.del', function () {
-            if (!confirm('Are you sure to delete this item?')) return;
-            let id = $(this).data('id');
-            $.ajax({
-                url: `/api/type/${typeId}/trackable-item/${id}`,
-                method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                success: loadItems,
-                error: function (xhr) {
-                    alert(xhr.responseJSON?.message || 'Delete failed');
+                error: function () {
+                    alert('新增失敗');
                 }
             });
         });
 
-        // 刪除 log
+        // 刪除 TrackLog
         $('#itemList').on('click', '.del-log', function () {
             if (!confirm('Are you sure to delete this log?')) return;
             let itemId = $(this).data('id');

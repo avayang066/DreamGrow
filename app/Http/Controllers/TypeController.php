@@ -29,6 +29,7 @@ class TypeController extends Controller
     {
         $userId = auth()->id();
         return (new TypeService())
+            // ->runValidate(['store'])
             ->store($userId, $request->all())
             ->getResponse();
     }

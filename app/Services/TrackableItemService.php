@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\TrackableItem;
 use App\Models\TrackLog;
 use App\Models\Type;
@@ -23,6 +24,8 @@ class TrackableItemService
 
     public function getTrackableItem($userId, $typeId)
     {
+        // DB::enableQueryLog();
+        // DB::raw();
         if (!$this->validateTypeExists($typeId)) {
             return $this;
         }
@@ -44,7 +47,7 @@ class TrackableItemService
             'types' => $trackableItems,
             'level_sum_by_type_id' => $levelSumByType_id
         ];
-
+        // dd(DB::getQueryLog());
         return $this;
     }
 
@@ -82,6 +85,7 @@ class TrackableItemService
             return $this;
         }
 
+        // DB::enableQueryLog();
         $userId = auth()->id();
         $trackableItem = TrackableItem::where('user_id', $userId)
             ->where('type_id', $typeId)
@@ -98,6 +102,7 @@ class TrackableItemService
         $trackableItem->update($data);
 
         $this->response = $trackableItem;
+        // dd(DB::getQueryLog());
         return $this;
     }
 
