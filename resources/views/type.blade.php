@@ -143,46 +143,39 @@
         }
 
         ul.type-list li {
-            background: linear-gradient(135deg, #e3f6fd 0%, #d6e3ff 55%, #fbe3f6 100%);
-            /* 六邊形鑽石感 */
-            clip-path: polygon(50% 0%,
-                    /* 上尖 */
-                    90% 20%,
-                    /* 右上 */
-                    100% 60%,
-                    /* 右中 */
-                    80% 100%,
-                    /* 右下 */
-                    20% 100%,
-                    /* 左下 */
-                    0% 60%,
-                    /* 左中 */
-                    10% 20%
-                    /* 左上 */
-                );
+            background: #f7f7fa;
+            border: 1px solid #7a75dd;
+            border-radius: 8px;
             box-shadow:
-                0 0 0 3px #c7d6ff44,
-                0 4px 18px 0 rgba(166, 180, 255, 0.10),
-                0 1.5px 8px #e0e7ff88,
-                0 0 40px 12px rgba(168, 237, 234, 0.10),
-                0 0 60px 18px rgba(254, 214, 227, 0.08);
-            margin-bottom: 22px;
-            width: 280px;
-            height: 120px;
+                0 0 0 2px #333,
+                4px 4px 0 0 #b3c6ff,
+                8px 8px 0 0 #fed6e3;
+            margin-bottom: 18px;
+            width: 260px;
+            height: 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
             position: relative;
-            transition: box-shadow 1s cubic-bezier(.22, 1, .36, 1), transform 1s cubic-bezier(.22, 1, .36, 1);
+            transition: box-shadow 0.2s, transform 0.2s;
             margin-left: auto;
             margin-right: auto;
             padding: 0;
-            will-change: box-shadow, transform;
-            filter: drop-shadow(0 0 12px #a8edea44) drop-shadow(0 0 18px #fed6e344);
-            /* 鑽石光澤效果 */
-            overflow: hidden;
+            font-family: 'VT323', 'Press Start 2P', 'Noto Sans TC', 'Quicksand', Arial, sans-serif;
+            font-size: 1.3em;
+            /* 像素感外框 */
+            image-rendering: pixelated;
+            /* 像素感 hover 效果 */
+        }
+
+        ul.type-list li:hover {
+            box-shadow:
+                0 0 0 2px #333,
+                8px 8px 0 0 #6c63ff,
+                12px 12px 0 0 #fed6e3;
+            transform: translateY(-4px) scale(1.04);
         }
 
         ul.type-list li::before {
@@ -198,15 +191,6 @@
             pointer-events: none;
             border-radius: 24px;
             filter: blur(2px);
-        }
-
-        ul.type-list li:hover {
-            box-shadow:
-                0 12px 40px 0 rgba(166, 180, 255, 0.38),
-                0 4px 24px #b3c6ff,
-                0 0 80px 24px rgba(168, 237, 234, 0.28),
-                0 0 120px 36px rgba(254, 214, 227, 0.22);
-            transform: translateY(-16px) scale(1.12);
         }
 
         @keyframes bubblePop {

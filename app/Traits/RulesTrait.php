@@ -10,16 +10,21 @@ trait RulesTrait
 {
     public function validate(array $data, array $rules, array $changeErrorName = null)
     {
-        $messages = $this->messages;
-        (empty($this->messages)) && $messages = $this->createMessages($rules, $changeErrorName)
-            ->toDot()
-            ->getMessages();
+        // 直接用 Laravel 內建的 Validator
+        $validator = \Validator::make($data, $rules);
 
-        return (new Service())->validatorAndResponse(
-            $data,
-            $rules,
-            $messages
-        );
+        if ($validator->fails()) {
+            // 你可以自訂 response 格式
+            return [
+                'success' => false,
+                'errors' => $validator->errors()
+            ];
+        }
+
+        return [
+            'success' => true,
+            'data' => $data
+        ];
     }
 
     public function runValidate($methods)

@@ -26,16 +26,10 @@ class Type extends Model
 
     public function dataFormat()
     {
-        // $exp = $this->exp; // 先取得 exp 關聯
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
             'name' => $this->name,
-            // 'exp' => [
-                // 'level' => $exp ? $exp->level : null,
-                // 'exp' => $exp ? $exp->exp : null,
-                // 'achievement_text' => $exp ? $exp->achievement_text : null,
-            // ]
         ];
     }
 }

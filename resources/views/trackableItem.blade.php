@@ -286,7 +286,7 @@
                             <br>
                             <span class="dream-item-exp">Exp:${item.exp}</span>
                         <br>Streak Days: ${item.streak_days_required || '-'}/${item.streak_days || '0' }
-                        <br>Bonus EXP:${item.streak_bonus_exp || '-'}
+                        <br><span style="font-size: 0.8em;">Bonus EXP:${item.streak_bonus_exp || '-'}</span>
                         <br>Achievement:<span class="dream-item-achievement">${item.achievement_text || '-'}${item.ifachieved == 1 ? ' 🏆🏆🏆' : ''}</span>
                     </span>
                     <span class="dream-action-btns">
@@ -490,7 +490,7 @@
                         // 可選：幾秒後自動消失
                         setTimeout(function () {
                             $popup.find('.achievement-toast').fadeOut(500, function () { $(this).remove(); });
-                        }, 3000);
+                        }, 5000);
                     }
 
                     $popup.find('.add-log-content').val('');

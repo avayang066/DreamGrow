@@ -19,41 +19,38 @@ class TypeController extends Controller
 
     public function index(Request $request)
     {
-        $userId = $request->user()->id;
-        return (new TypeService())
-            ->getType($userId)
+        return (new TypeService($request))
+            ->getType()
             ->getResponse();
     }
 
     public function store(Request $request)
     {
-        $userId = auth()->id();
-        return (new TypeService())
-            // ->runValidate(['store'])
-            ->store($userId, $request->all())
+        return (new TypeService($request))
+            ->runValidate(['name'])
+            ->store()
             ->getResponse();
     }
 
     public function update(Request $request, $typeId)
     {
-        return (new TypeService())
-            ->update(auth()->id(), $typeId, $request->all())
+        return (new TypeService($request))
+            ->runValidate(['name'])
+            ->update($typeId)
             ->getResponse();
     }
 
     public function destroy(Request $request, $typeId)
     {
-        $userId = $request->user()->id;
-        return (new TypeService())
-            ->destroy($userId, $typeId)
+        return (new TypeService($request))
+            ->destroy($typeId)
             ->getResponse();
     }
 
-    public function show($typeId)
+    public function show(Request $request, $typeId)
     {
-        $userId = auth()->id();
-        return (new TypeService())
-            ->show($userId, $typeId)
+        return (new TypeService($request))
+            ->show($typeId)
             ->getResponse();
     }
 

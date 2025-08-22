@@ -70,7 +70,7 @@ class TrackLogService
 
         $this->updateExpAndLevel($trackableItem, $trackLogs->exp_gained);
         $this->updateAchievement($trackableItem);
-        $currentStreak = $this->getCurrentStreak($trackableItem);
+        $currentStreak = $this->calculateMaxStreak($trackableItem);
 
         $this->response = [
             'track_log' => $trackLogs,
@@ -105,8 +105,8 @@ class TrackLogService
         $item->save();
     }
 
-    // 判斷需要的連續天數，已累積幾天
-    private function getCurrentStreak($trackableItem)
+    // 判斷已累積的最大天數
+    private function calculateMaxStreak($trackableItem)
     {
         $logDates = TrackLog::where('trackable_item_id', $trackableItem->id)
             ->select(DB::raw('Date(created_at) as log_date'))
@@ -121,54 +121,49 @@ class TrackLogService
 
         $streak = 1;
         $maxStreak = 1;
-        $requiredDays = $trackableItem->streak_days_required;
 
         // $logDates 是 tracklog 陣列 // 用 curr、prev 判斷是否有連續天數
         for ($i = 1; $i < count($logDates); $i++) {
             $prev = Carbon::parse($logDates[$i - 1]);
             $curr = Carbon::parse($logDates[$i]);
             if ($curr->diffInDays($prev) == 1) {
-                if ($streak <= $requiredDays) {
-                    $streak++;
-                    $maxStreak = max($maxStreak, $streak);
-                    TrackableItem::where('id', $trackableItem->id)->update(['streak_days' => $maxStreak]);
-                }
+                $streak++;
+                $maxStreak = max($maxStreak, $streak);
             } else {
                 $streak = 1;
             }
         }
+
+        $requiredDays = $trackableItem->streak_days_required;
+        $maxStreak = min($maxStreak, $requiredDays); // 將最大天數限制在成就天數內
+
+        $trackableItem->streak_days = $maxStreak;
+        $trackableItem->save();
+
         return $maxStreak;
     }
 
     // 判斷連續天數是否有獲得成就
     private function updateAchievement($trackableItem)
     {
-        // 取得需要達成成就的「連續天數」
         $requiredDays = $trackableItem->streak_days_required;
+        $maxStreak = $this->calculateMaxStreak($trackableItem);
 
-        // 取得所有 log 的日期（去重複，排序）
-        $logDates = TrackLog::where('trackable_item_id', $trackableItem->id)
-            // ->whereDate('created_at', '>=', Carbon::today()->subDays($requiredDays - 1))
-            ->select(DB::raw('Date(created_at) as log_date'))
-            ->groupBy('log_date')
-            ->pluck('log_date')
-            ->toArray();
-
-        // 判斷是否有 N 天
-        $streak = 1;
-        for ($i = 1; $i < count($logDates); $i++) {
-            $prev = Carbon::parse($logDates[$i - 1]);
-            $curr = Carbon::parse($logDates[$i]);
-            if ($curr->diffInDays($prev) == 1) {
-                $streak++;
-                if ($streak >= $requiredDays) {
-                    $trackableItem->exp += $trackableItem->streak_bonus_exp;
-                    $trackableItem->ifachieved = 1;
-                    $trackableItem->save();
-                    return ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'];
-                }
+        if ($maxStreak >= $requiredDays) {
+            if (!$trackableItem->ifachieved) {
+                $trackableItem->exp += $trackableItem->streak_bonus_exp;
             }
+            $trackableItem->ifachieved = 1;
+            $trackableItem->save();
+            return ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'];
+        } else {
+            if ($trackableItem->ifachieved) {
+                $trackableItem->exp -= $trackableItem->streak_bonus_exp;
+            }
+            $trackableItem->ifachieved = 0;
+            $trackableItem->save();
         }
+
     }
 
     public function update($userId, $request, $typeId, $trackable_item_id, $track_log_id)
@@ -215,7 +210,7 @@ class TrackLogService
 
         $this->updateExpAndLevel($trackableItem, -$trackLog->exp_gained);
         $this->updateAchievement($trackableItem);
-        $currentStreak = $this->getCurrentStreak($trackableItem);
+        $currentStreak = $this->calculateMaxStreak($trackableItem);
 
         $this->response = [
             'track_log' => $trackLog,
@@ -225,7 +220,7 @@ class TrackLogService
 
         return $this;
     }
-
+    
     public function show($typeId, $trackable_item_id, $track_log_id)
     {
         $trackLog = TrackLog::where('trackable_item_id', $trackable_item_id)
@@ -238,6 +233,27 @@ class TrackLogService
         }
 
         $this->response = $trackLog;
+        return $this;
+    }
+
+    public function getLogsByDate($userId, $typeId, $trackable_item_id, $track_log_id, $date)
+    {
+        $trackableItem = TrackableItem::where('type_id', $typeId)
+        ->where('id', $trackable_item_id)
+        ->first();
+
+        if(!$trackableItem) {
+            $this->response = ['message' => 'Trackable item not found'];
+            return $this;
+        }
+
+        $tracklog = Tracklog::where('user_id', $userId)
+        ->where('trackable_item_id', $trackable_item_id)
+        ->where('id', $track_log_id)
+        ->whereDate('created_at', $date)
+        ->get();
+
+        $this->response = $tracklog;
         return $this;
     }
 
