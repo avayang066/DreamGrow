@@ -19,22 +19,21 @@ class TrackLogsController extends Controller
 
     public function index(Request $request, $typeId, $trackable_item_id)
     {
-        $userId = $request->user()->id;
-        return (new TrackLogService())
-            ->getTrackLogs($userId, $typeId, $trackable_item_id)
+        return (new TrackLogService($request))
+            ->getTrackLogs( $typeId, $trackable_item_id)
             ->getResponse();
     }
 
     public function store(Request $request, $typeId, $trackable_item_id)
     {
-        return (new TrackLogService())
+        return (new TrackLogService($request))
             ->store($request, $typeId, $trackable_item_id)
             ->getResponse();
     }
 
     public function update(Request $request, $typeId, $trackable_item_id, $track_log_id)
     {
-        return (new TrackLogService())
+        return (new TrackLogService($request))
             ->update(auth()->id(), $request, $typeId, $trackable_item_id, $track_log_id)
             ->getResponse();
     }
@@ -42,15 +41,16 @@ class TrackLogsController extends Controller
     public function destroy(Request $request, $type_id, $trackable_item_id, $track_log_id)
     {
         $userId = $request->user()->id;
-        return (new TrackLogService())
+        return (new TrackLogService($request))
             ->destroy($userId, $type_id, $trackable_item_id, $track_log_id)
             ->getResponse();
     }
 
-    public function show($typeId, $trackable_item_id, $track_log_id)
+    public function show(Request $request, $typeId, $trackable_item_id, $track_log_id)
     {
-        return (new TrackLogService())
+        return (new TrackLogService($request))
             ->show($typeId, $trackable_item_id, $track_log_id)
+            ->getLogsByDate($typeId, $trackable_item_id, $track_log_id)
             ->getResponse();
     }
 }

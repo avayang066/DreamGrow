@@ -12,15 +12,14 @@ trait RulesTrait
     {
         // 直接用 Laravel 內建的 Validator
         $validator = \Validator::make($data, $rules);
-
         if ($validator->fails()) {
             // 你可以自訂 response 格式
             return [
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
+                'messages' => $validator->messages()
             ];
         }
-
         return [
             'success' => true,
             'data' => $data

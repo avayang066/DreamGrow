@@ -84,6 +84,7 @@
             color: #6c63ff;
             margin-bottom: 16px;
             letter-spacing: 2px;
+            font-family: 'Zpix', 'VT323', 'Press Start 2P', 'Noto Sans TC', Arial, sans-serif;
         }
 
         .dream-desc {
@@ -167,10 +168,10 @@
 <body>
     <div class="container">
         <div class="dream-bg">🌙 🌙 🌙</div>
-        <h1>˙3˙</h1>
+        <h1 class="main-title">日誌</h1>
         <div class="dream-desc" style="font-size: 1.5em">
-            Everything you do can earn exp, level up, unlock achievements,
-            <br>and review your daily efforts and dreams!
+            Earn exp, level up, unlock achievements,
+            <br>and review your daily efforts!
         </div>
         <ul style="font-size: 1em">
             <span class="feature-list-chinese">

@@ -142,6 +142,11 @@
             justify-content: space-between;
             box-shadow: 0 1px 8px #e0e7ff;
             font-size: 1.08em;
+            box-shadow:
+                0 0 0 2px #333,
+                8px 8px 0 0 #6c63ff,
+                12px 12px 0 0 #fed6e3;
+            margin-top: 8%;
         }
 
         .dream-item-info {
@@ -285,7 +290,7 @@
                         <b><span class="dream-item-name">${$('<div>').text(item.name).html()} |　Lv:${item.level || '-'}</span></b>
                             <br>
                             <span class="dream-item-exp">Exp:${item.exp}</span>
-                        <br>Streak Days: ${item.streak_days_required || '-'}/${item.streak_days || '0' }
+                        <br>Streak Days: ${item.streak_days_required || '-'}/${item.streak_days || '0'}
                         <br><span style="font-size: 0.8em;">Bonus EXP:${item.streak_bonus_exp || '-'}</span>
                         <br>Achievement:<span class="dream-item-achievement">${item.achievement_text || '-'}${item.ifachieved == 1 ? ' 🏆🏆🏆' : ''}</span>
                     </span>

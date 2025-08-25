@@ -84,7 +84,6 @@ class TypeService
         $type = Type::where('id', $typeId)
             ->where('user_id', $this->userId)
             ->first();
-
         if (!$type) {
             $this->response = ['success' => false, 'message' => '類型不存在'];
             return $this;

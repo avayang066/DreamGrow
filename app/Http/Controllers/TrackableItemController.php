@@ -20,22 +20,23 @@ class TrackableItemController extends Controller
 
     public function index(Request $request, $typeId)
     {
-        $userId = $request->user()->id;
-        return (new TrackableItemService())
-            ->getTrackableItem($userId, $typeId)
+        $userId = auth()->id();
+        return (new TrackableItemService($request))
+            ->getTrackableItem($typeId, $userId)
             ->getResponse();
     }
 
     public function store(Request $request, $typeId)
     {
-        return (new TrackableItemService())
+        return (new TrackableItemService($request))
+            ->runValidate(['name', 'type_id'])
             ->store($request, $typeId)
             ->getResponse();
     }
 
     public function update(Request $request, $typeId, $trackable_item_id)
     {
-        return (new TrackableItemService())
+        return (new TrackableItemService($request))
             ->update($request, $typeId, $trackable_item_id)
             ->getResponse();
     }
@@ -43,16 +44,16 @@ class TrackableItemController extends Controller
     public function destroy(Request $request, $typeId, $trackable_item_id)
     {
         $userId = $request->user()->id;
-        return (new TrackableItemService())
+        return (new TrackableItemService($request))
             ->destroy($userId, $typeId, $trackable_item_id)
             ->getResponse();
     }
 
-    public function show($typeId, $trackable_item_id)
+    public function show(Request $request, $typeId, $trackable_item_id)
     {
-        $userId = auth()->id();
-        $service = new TrackableItemService();
-        return $service->show($userId, $typeId, $trackable_item_id)->getResponse();
+        return (new TrackableItemService($request))
+            ->show($typeId, $trackable_item_id)
+            ->getResponse();
     }
 
 }

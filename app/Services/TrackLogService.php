@@ -7,11 +7,26 @@ use App\Models\TrackLog;
 use App\Models\TrackableItem;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class TrackLogService
 {
     private $response;
     private $request;
+    protected $changeErrorName = [];
+    protected $messages = [];
+
+
+    function __construct(Request $request, $dataId = null)
+    {
+        $this->request = $request;
+        $this->dataId = $dataId;
+        $this->userId = auth()->id();
+
+        if (!$this->userId) {
+            $this->response = ['message' => '未登入'];
+        }
+    }
 
     function ifTrackableItemExists($trackableItemId)
     {
@@ -19,7 +34,7 @@ class TrackLogService
     }
 
     // 單一 trackable_items 的所有 track_logs
-    public function getTrackLogs($userId, $typeId, $trackable_item_id)
+    public function getTrackLogs($typeId, $trackable_item_id)
     {
 
         $trackableItem = TrackableItem::where('type_id', $typeId)
@@ -31,7 +46,7 @@ class TrackLogService
             return $this;
         }
 
-        $trackLogs = TrackLog::where('user_id', $userId)
+        $trackLogs = TrackLog::where('user_id', $this->userId)
             ->where('trackable_item_id', $trackable_item_id)
             ->get();
 
