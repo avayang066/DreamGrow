@@ -40,9 +40,8 @@ class TrackLogsController extends Controller
 
     public function destroy(Request $request, $type_id, $trackable_item_id, $track_log_id)
     {
-        $userId = $request->user()->id;
         return (new TrackLogService($request))
-            ->destroy($userId, $type_id, $trackable_item_id, $track_log_id)
+            ->destroy($type_id, $trackable_item_id, $track_log_id)
             ->getResponse();
     }
 
@@ -53,4 +52,12 @@ class TrackLogsController extends Controller
             ->getLogsByDate($typeId, $trackable_item_id, $track_log_id)
             ->getResponse();
     }
+
+    public function getLogsByDate(Request $request, $typeId, $trackable_item_id)
+    {
+        return (new TrackLogService($request))
+            ->getLogsByDate($request,$typeId, $trackable_item_id)
+            ->getResponse();
+    }
+
 }

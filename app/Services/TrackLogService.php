@@ -28,11 +28,6 @@ class TrackLogService
         }
     }
 
-    function ifTrackableItemExists($trackableItemId)
-    {
-        return TrackLog::where('trackable_item_id', $trackableItemId)->exists();
-    }
-
     // 單一 trackable_items 的所有 track_logs
     public function getTrackLogs($typeId, $trackable_item_id)
     {
@@ -88,6 +83,7 @@ class TrackLogService
         $currentStreak = $this->calculateMaxStreak($trackableItem);
 
         $this->response = [
+            'message' => 'Track log created successfully.',
             'track_log' => $trackLogs,
             'current_streak' => $currentStreak,
             'achievement_message' => $trackableItem->ifachieved ? ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'] : null
@@ -206,9 +202,9 @@ class TrackLogService
         return $this;
     }
 
-    public function destroy($userId, $type_id, $trackable_item_id, $track_log_id)
+    public function destroy($type_id, $trackable_item_id, $track_log_id)
     {
-        $trackLog = TrackLog::where('user_id', $userId)
+        $trackLog = TrackLog::where('user_id', $this->userId)
             ->where('trackable_item_id', $trackable_item_id)
             ->where('id', $track_log_id)
             ->first();
@@ -228,6 +224,7 @@ class TrackLogService
         $currentStreak = $this->calculateMaxStreak($trackableItem);
 
         $this->response = [
+            'message' => 'Track log deleted successfully.',
             'track_log' => $trackLog,
             'current_streak' => $currentStreak,
             'achievement_message' => $trackableItem->ifachieved ? ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'] : null
@@ -235,7 +232,7 @@ class TrackLogService
 
         return $this;
     }
-    
+
     public function show($typeId, $trackable_item_id, $track_log_id)
     {
         $trackLog = TrackLog::where('trackable_item_id', $trackable_item_id)
@@ -251,22 +248,22 @@ class TrackLogService
         return $this;
     }
 
-    public function getLogsByDate($userId, $typeId, $trackable_item_id, $track_log_id, $date)
+    public function getLogsByDate(Request $request, $typeId, $trackable_item_id)
     {
         $trackableItem = TrackableItem::where('type_id', $typeId)
-        ->where('id', $trackable_item_id)
-        ->first();
+            ->where('id', $trackable_item_id)
+            ->first();
 
-        if(!$trackableItem) {
+        if (!$trackableItem) {
             $this->response = ['message' => 'Trackable item not found'];
             return $this;
         }
 
-        $tracklog = Tracklog::where('user_id', $userId)
-        ->where('trackable_item_id', $trackable_item_id)
-        ->where('id', $track_log_id)
-        ->whereDate('created_at', $date)
-        ->get();
+        $date = $request->query('date');
+        $tracklog = Tracklog::where('user_id', $this->userId)
+            ->where('trackable_item_id', $trackable_item_id)
+            ->whereDate('created_at', $date)
+            ->get();
 
         $this->response = $tracklog;
         return $this;

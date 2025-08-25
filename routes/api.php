@@ -42,4 +42,5 @@ Route::middleware('auth:sanctum')->group(function () {
         ->only(['index', 'store', 'update', 'destroy', 'show']); // trackable-item
     Route::apiResource('type.trackable-item.track-log', TrackLogsController::class) //api/type/{type}/trackable-item/{trackable_item}/track-log/{track_log}
         ->only(['index', 'store', 'update', 'destroy', 'show']); // track log
+    Route::get('type/{typeId}/trackable-item/{trackable_item_id}/track-log-by-date', [TrackLogsController::class, 'getLogsByDate']);
 });
