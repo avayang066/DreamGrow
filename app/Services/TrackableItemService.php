@@ -14,8 +14,14 @@ class TrackableItemService
     use RulesTrait;
 
     protected $rules = [
-        'name' => 'required|string|max:255',
-        'type_id' => 'required|exists:types,id',
+        'create' => [
+            'name' => 'required|string|max:255',
+            'type_id' => 'required|exists:types,id',
+        ],
+        'update' => [
+            'name' => 'required|exists:trackable_items,name',
+            'type_id' => 'required|exists:types,id',
+        ]
     ];
 
     private $response;
@@ -35,27 +41,12 @@ class TrackableItemService
         }
     }
 
-    function validateTypeExists($typeId = null)
-    {
-        $typeId = $typeId ?? $this->request->input('id');
-
-        if (!Type::where('id', $typeId)->exists()) {
-            $this->response = ['message' => 'Type does not exist'];
-            return false;
-        }
-        return true;
-    }
-
-    public function getTrackableItem($typeId, $userId)
+    public function getTrackableItem($typeId)
     {
         // DB::enableQueryLog();
         // DB::raw();
 
-        if (!$this->validateTypeExists($typeId)) {
-            return $this;
-        }
-
-        $trackableItems = TrackableItem::where('user_id', $userId)
+        $trackableItems = TrackableItem::where('user_id', $this->userId)
             ->where('type_id', $typeId)
             ->get();
         $this->response = $trackableItems;
@@ -79,9 +70,6 @@ class TrackableItemService
 
     public function store(Request $request, $typeId)
     {
-        if (!$this->validateTypeExists($typeId)) {
-            return $this;
-        }
 
         $data = $request->only((new TrackableItem())->getFillable());
         // 強制覆蓋 user_id 與 type_id（避免被竄改）
@@ -97,10 +85,6 @@ class TrackableItemService
 
     public function update(Request $request, $typeId, $trackable_item_id)
     {
-        if (!$this->validateTypeExists($typeId)) {
-            return $this;
-        }
-
         // DB::enableQueryLog();
         $userId = auth()->id();
         $trackableItem = TrackableItem::where('user_id', $userId)
@@ -124,9 +108,6 @@ class TrackableItemService
 
     public function destroy($userId, $typeId, $trackable_item_id)
     {
-        if (!$this->validateTypeExists($typeId)) {
-            return $this;
-        }
 
         $trackableItem = TrackableItem::where('user_id', $userId)
             ->where('type_id', $typeId)
@@ -144,10 +125,6 @@ class TrackableItemService
 
     public function show($typeId, $trackable_item_id)
     {
-        if (!$this->validateTypeExists($typeId)) {
-            return $this;
-        }
-
         $trackableItem = TrackableItem::where('user_id', $this->userId)
             ->where('type_id', $typeId)
             ->where('id', $trackable_item_id)

@@ -20,16 +20,15 @@ class TrackableItemController extends Controller
 
     public function index(Request $request, $typeId)
     {
-        $userId = auth()->id();
         return (new TrackableItemService($request))
-            ->getTrackableItem($typeId, $userId)
+            ->getTrackableItem($typeId)
             ->getResponse();
     }
 
     public function store(Request $request, $typeId)
     {
         return (new TrackableItemService($request))
-            ->runValidate(['name', 'type_id'])
+            ->runValidate(['create'])
             ->store($request, $typeId)
             ->getResponse();
     }
@@ -37,6 +36,7 @@ class TrackableItemController extends Controller
     public function update(Request $request, $typeId, $trackable_item_id)
     {
         return (new TrackableItemService($request))
+            ->runValidate(['update'])
             ->update($request, $typeId, $trackable_item_id)
             ->getResponse();
     }

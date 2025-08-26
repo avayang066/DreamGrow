@@ -47,15 +47,14 @@
             font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             color: #6c63ff;
             text-decoration: none;
-            font-size: 1.08em;
+            font-size: 0.8em;
             padding: 4px 10px;
             border-radius: 6px;
             transition: background 0.2s;
         }
 
         .dream-navbar .nav-home:hover {
-            background: #f7f7fa;
-            text-decoration: underline;
+            background: #acacc4;
         }
 
         .dream-navbar .nav-user {
@@ -162,6 +161,8 @@
 
 <nav class="dream-navbar">
     <a href="/home" class="nav-home">Home</a>
+    <a href="/type" class="nav-home">Type</a>
+    <a href="/statistics" class="nav-home">Statistics</a>
     <span class="nav-user"><span id="navUserName">載入中...</span></span>
 </nav>
 

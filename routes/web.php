@@ -37,6 +37,11 @@ Route::get('/logout', function () {
 Route::get('/type', function () {
     return view('type');
 })->name('type');
+
 Route::get('/type/{type}/trackable-item', function ($typeId) {
     return view('trackableItem', ['typeId' => $typeId]);
 });
+
+Route::get('/statistics', function () {
+    return view('statistics');
+})->name('statistics');

@@ -26,7 +26,7 @@
             padding: 0;
         }
 
-        /* 導覽列簡易半透明白色樣式 */
+       /* 導覽列簡易半透明白色樣式 */
         .dream-navbar {
             width: 100%;
             background: rgba(255, 255, 255, 0.7);
@@ -46,15 +46,14 @@
             font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             color: #6c63ff;
             text-decoration: none;
-            font-size: 1.08em;
+            font-size: 0.8em;
             padding: 4px 10px;
             border-radius: 6px;
             transition: background 0.2s;
         }
 
         .dream-navbar .nav-home:hover {
-            background: #f7f7fa;
-            text-decoration: underline;
+            background: #acacc4;
         }
 
         .dream-navbar .nav-user {
@@ -187,7 +186,8 @@
         }
 
         .dream-back-link:hover {
-            text-decoration: underline;
+            background: #acacc4;
+            border-radius: 6px;
         }
 
         .add-log-btn {
@@ -219,12 +219,14 @@
 
 <nav class="dream-navbar">
     <a href="/home" class="nav-home">Home</a>
+    <a href="/type" class="nav-home">Type</a>
+    <a href="/statistics" class="nav-home">Statistics</a>
     <span class="nav-user"><span id="navUserName">載入中...</span></span>
 </nav>
 
 <body>
     <div class="dream-container">
-        <a href="/type" class="dream-back-link" style="font-size: 1.5em;">← Back to Type Management</a>
+        <a href="/type" class="dream-back-link" style="font-size: 1.5em;">← Back to Type</a>
         <h2 id="typeTitle">🌙</h2>
         <div class="dream-add-form" style="font-size: 1.2em;">
             <input type="text" id="itemName" placeholder="Sub-item Name">
@@ -452,13 +454,13 @@
             let date = $(this).data('date');
             let $popup = $(this).closest('.calendar-popup');
             $.ajax({
-                url: `/api/type/${typeId}/trackable-item/${itemId}/track-log?date=${date}`,
+                url: `/api/type/${typeId}/trackable-item/${itemId}/track-log-by-date?date=${date}`,
                 method: 'GET',
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
                 success: function (logs) {
                     let logsHtml = `<div style="font-weight:bold;margin-bottom:6px;">${date} Logs</div>`;
                     // 只顯示該日的 log
-                    logs.filter(log => log.created_at.substr(0, 10) === date).forEach(log => {
+                    logs.forEach(log => {
                         logsHtml += `<div style="background:#fff;border-radius:8px;padding:6px 10px;margin-bottom:6px;box-shadow:0 1px 6px #e0e7ff;display:flex;justify-content:space-between;align-items:center;">
                     <span class="calendar-log-content">content: ${log.content} / exp: ${log.exp_gained}</span>
                     <button class="del-log" data-logid="${log.id}" data-id="${log.trackable_item_id}">Delete</button>

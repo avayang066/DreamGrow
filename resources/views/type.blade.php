@@ -34,6 +34,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             box-shadow: 0 2px 8px #e0e7ff;
             font-size: 1.08em;
             margin-bottom: 18px;
@@ -45,15 +46,14 @@
             font-family: 'Press Start 2P', 'Noto Sans TC', 'Quicksand', '微軟正黑體', Arial, sans-serif;
             color: #6c63ff;
             text-decoration: none;
-            font-size: 1.08em;
+            font-size: 0.8em;
             padding: 4px 10px;
             border-radius: 6px;
             transition: background 0.2s;
         }
 
         .dream-navbar .nav-home:hover {
-            background: #f7f7fa;
-            text-decoration: underline;
+            background: #acacc4;
         }
 
         .dream-navbar .nav-user {
@@ -274,19 +274,23 @@
         }
 
         .back-link:hover {
-            text-decoration: underline;
+            background: #acacc4;
+            border-radius: 6px;
         }
     </style>
 </head>
 
 <nav class="dream-navbar">
     <a href="/home" class="nav-home">Home</a>
+    <a href="/type" class="nav-home">Type</a>
+    <a href="/statistics" class="nav-home">Statistics</a>
     <span class="nav-user"><span id="navUserName">載入中...</span></span>
 </nav>
 
 <body>
     <div class="container">
-        <a href="/home" class="back-link" style="font-size: 1.5em;">← back</a>
+        <a href="/home" class="back-link" style="font-size: 1.5em;">← Back</a>
+        <a href="/home" class="back-link" style="font-size: 1.5em; margin-left: 40%;">statistics →</a>
         {{-- <h2>DreamTree</h2> --}}
         <div class="desc" style="font-size: 1em;">
             Create, edit or delete your personal growth goals!
@@ -347,7 +351,7 @@
                             html += `<li>
                         <span class="type-name">${$('<div>').text(type.name).html()}</span>
                         <span class="action-btns">
-                            <button class="edit" data-id="${type.id}" data-name="${type.name}">Edit</button>
+                            <button class="edit" data-id="${type.id}" data-name="${type.name}">Enter</button>
                             <button class="del" data-id="${type.id}">Delete</button>
                         </span>
                     </li>`;

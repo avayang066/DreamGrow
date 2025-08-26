@@ -27,6 +27,7 @@ class TrackLogsController extends Controller
     public function store(Request $request, $typeId, $trackable_item_id)
     {
         return (new TrackLogService($request))
+            ->runValidate(['create'])
             ->store($request, $typeId, $trackable_item_id)
             ->getResponse();
     }
@@ -34,6 +35,7 @@ class TrackLogsController extends Controller
     public function update(Request $request, $typeId, $trackable_item_id, $track_log_id)
     {
         return (new TrackLogService($request))
+            ->runValidate(methods: ['update'])
             ->update(auth()->id(), $request, $typeId, $trackable_item_id, $track_log_id)
             ->getResponse();
     }

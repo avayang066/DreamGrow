@@ -2,20 +2,33 @@
 
 namespace App\Services;
 
+use App\Traits\RulesTrait;
 use App\Models\Type;
-use App\Models\TrackLog;
 use App\Models\TrackableItem;
+use App\Models\TrackLog;
+use App\Models\Log;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-
 class TrackLogService
 {
+    use RulesTrait;
+
     private $response;
     private $request;
     protected $changeErrorName = [];
     protected $messages = [];
 
+    protected $rules = [
+        'create' => [
+            'content' => 'required|string|max:255',
+            'trackable_item_id' => 'required|exists:trackable_items,id',
+        ],
+        'update' => [
+            'content' => 'required|exists:track_logs,content',
+            'trackable_item_id' => 'required|exists:trackable_items,id',
+        ]
+    ];
 
     function __construct(Request $request, $dataId = null)
     {
@@ -65,28 +78,58 @@ class TrackLogService
             'content' => 'required|string|max:255',
         ]);
 
-        // 取得 fillable 欄位的所有資料
-        $trackLogs = new TrackLog();
-        $data = $request->only($trackLogs->getFillable());
-
-        // 強制覆蓋 user_id 與 trackable_item_id（避免被竄改）
-        $data['user_id'] = auth()->id();
-        $data['trackable_item_id'] = $trackable_item_id;
-
-        $trackLogs->fill($data);
-        $trackLogs->save();
-
         $trackableItem = TrackableItem::find($trackable_item_id);
+        $level_before = $trackableItem->level;
+
+        $data = array_merge(
+            $request->only((new Log())->getFillable()),
+            [
+                'user_id' => auth()->id(),
+                'trackable_item_id' => $trackable_item_id,
+            ]
+        );
+
+        $trackLogs = TrackLog::create($data);
 
         $this->updateExpAndLevel($trackableItem, $trackLogs->exp_gained);
         $this->updateAchievement($trackableItem);
         $currentStreak = $this->calculateMaxStreak($trackableItem);
+
+        $trackableItem->refresh();
+        $level_after = $trackableItem->level;
+
+        $this->createLog($trackable_item_id, $level_before, $level_after);
 
         $this->response = [
             'message' => 'Track log created successfully.',
             'track_log' => $trackLogs,
             'current_streak' => $currentStreak,
             'achievement_message' => $trackableItem->ifachieved ? ['message' => 'Get the achievement ' . $trackableItem->achievement_text . '！'] : null
+        ];
+
+        return $this;
+    }
+
+    public function createLog($trackable_item_id, $level_before = null, $level_after = null)
+    {
+        $trackableItem = TrackableItem::find($trackable_item_id);
+
+        $data = array_merge(
+            $this->request->only((new Log())->getFillable()),
+            [
+                'user_id' => auth()->id(),
+                'type_id' => $trackableItem ? $trackableItem->type_id : null,
+                'trackable_item_id' => $trackable_item_id,
+                'level_before' => $level_before,
+                'level_after' => $level_after,
+            ]
+        );
+
+        $Logs = Log::create($data);
+
+        $this->response = [
+            'message' => 'Logs created successfully.',
+            'Logs' => $Logs
         ];
 
         return $this;
