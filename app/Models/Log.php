@@ -33,6 +33,7 @@ class Log extends Model
         'date',
         'level_before',
         'level_after',
+        'action',
         'note'
     ];
 
@@ -47,6 +48,7 @@ class Log extends Model
             'date' => $this->date,
             // 'level_before' => $this->level_before,
             // 'level_after' => $this->level_after,
+            'action' => $this->action,
             'note' => $this->note
         ];
     }

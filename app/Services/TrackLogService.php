@@ -98,7 +98,7 @@ class TrackLogService
         $trackableItem->refresh();
         $level_after = $trackableItem->level;
 
-        $this->createLog($trackable_item_id, $level_before, $level_after);
+        $this->createLog($trackable_item_id, $level_before, $level_after, 'create');
 
         $this->response = [
             'message' => 'Track log created successfully.',
@@ -110,7 +110,7 @@ class TrackLogService
         return $this;
     }
 
-    public function createLog($trackable_item_id, $level_before = null, $level_after = null)
+    public function createLog($trackable_item_id, $level_before = null, $level_after = null, $action = null)
     {
         $trackableItem = TrackableItem::find($trackable_item_id);
 
@@ -122,7 +122,7 @@ class TrackLogService
                 'trackable_item_id' => $trackable_item_id,
                 'level_before' => $level_before,
                 'level_after' => $level_after,
-            ]
+                'action' => $action,            ]
         );
 
         $Logs = Log::create($data);
@@ -241,6 +241,8 @@ class TrackLogService
         $data = $request->only($trackableItem->getFillable());
         $trackableItem->update($data);
 
+        $this->createLog($trackable_item_id, null, null, 'update');
+
         $this->response = $trackableItem;
         return $this;
     }
@@ -265,6 +267,9 @@ class TrackLogService
         $this->updateExpAndLevel($trackableItem, -$trackLog->exp_gained);
         $this->updateAchievement($trackableItem);
         $currentStreak = $this->calculateMaxStreak($trackableItem);
+
+        $OriginalContent = $trackLog->content;
+        $this->createLog($trackable_item_id, null, null, 'delete', $OriginalContent);
 
         $this->response = [
             'message' => 'Track log deleted successfully.',

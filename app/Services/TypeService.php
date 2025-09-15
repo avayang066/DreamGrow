@@ -39,20 +39,7 @@ class TypeService
     {
         $types = Type::with('user')
             ->where('user_id', $this->userId)
-            ->get()
-            ->map(function ($item) {
-                return $item->dataFormat();
-            });
-
-        $this->response = $types;
-
-        return $this;
-    }
-
-    public function getItemTotalLevel()
-    {
-        $types = Type::where('user_id', $this->userId)
-            ->withCount(['trackableItems as total_level' => function ($query) {
+             ->withCount(['trackableItems as total_level' => function ($query) {
                 $query->select(\DB::raw("SUM(level)"));
             }])
             ->get()
@@ -64,6 +51,22 @@ class TypeService
 
         return $this;
     }
+
+    // public function getItemTotalLevel()
+    // {
+    //     $types = Type::where('user_id', $this->userId)
+    //         ->withCount(['trackableItems as total_level' => function ($query) {
+    //             $query->select(\DB::raw("SUM(level)"));
+    //         }])
+    //         ->get()
+    //         ->map(function ($item) {
+    //             return $item->dataFormat();
+    //         });
+
+    //     $this->response = $types;
+
+    //     return $this;
+    // }
 
     public function store()
     {

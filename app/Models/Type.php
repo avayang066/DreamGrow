@@ -24,6 +24,11 @@ class Type extends Model
         return $this->hasOne(TrackableItem::class, 'type_id', 'id');
     }
 
+    public function trackableItems()
+{
+    return $this->hasMany(TrackableItem::class, 'type_id', 'id');
+}
+
     public function dataFormat()
     {
         return [
