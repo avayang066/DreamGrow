@@ -122,7 +122,8 @@ class TrackLogService
                 'trackable_item_id' => $trackable_item_id,
                 'level_before' => $level_before,
                 'level_after' => $level_after,
-                'action' => $action,            ]
+                'action' => $action,
+            ]
         );
 
         $Logs = Log::create($data);
@@ -284,7 +285,7 @@ class TrackLogService
     public function show($typeId, $trackable_item_id, $track_log_id)
     {
         $trackLog = TrackLog::where('trackable_item_id', $trackable_item_id)
-            ->where('type_id', $typeId)
+            // ->where('type_id', $typeId)
             ->where('id', $track_log_id)
             ->first();
 

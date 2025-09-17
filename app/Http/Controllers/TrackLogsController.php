@@ -51,7 +51,6 @@ class TrackLogsController extends Controller
     {
         return (new TrackLogService($request))
             ->show($typeId, $trackable_item_id, $track_log_id)
-            ->getLogsByDate($typeId, $trackable_item_id, $track_log_id)
             ->getResponse();
     }
 
