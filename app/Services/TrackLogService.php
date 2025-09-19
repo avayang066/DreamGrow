@@ -110,7 +110,7 @@ class TrackLogService
         return $this;
     }
 
-    public function createLog($trackable_item_id, $level_before = null, $level_after = null, $action = null)
+    public function createLog($trackable_item_id, $level_before = null, $level_after = null, $action = null, $content = null)
     {
         $trackableItem = TrackableItem::find($trackable_item_id);
 
@@ -123,6 +123,7 @@ class TrackLogService
                 'level_before' => $level_before,
                 'level_after' => $level_after,
                 'action' => $action,
+                'content' => $content, // 為了儲存 destroy() log 先新增的
             ]
         );
 
@@ -263,14 +264,13 @@ class TrackLogService
         // 取得對應的 TrackableItem
         $trackableItem = TrackableItem::find($trackable_item_id);
 
+        $this->createLog($trackable_item_id, null, null, 'delete', $trackLog->content);
         $trackLog->delete();
 
         $this->updateExpAndLevel($trackableItem, -$trackLog->exp_gained);
         $this->updateAchievement($trackableItem);
         $currentStreak = $this->calculateMaxStreak($trackableItem);
 
-        $OriginalContent = $trackLog->content;
-        $this->createLog($trackable_item_id, null, null, 'delete', $OriginalContent);
 
         $this->response = [
             'message' => 'Track log deleted successfully.',
