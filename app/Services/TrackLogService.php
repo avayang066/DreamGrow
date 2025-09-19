@@ -98,7 +98,7 @@ class TrackLogService
         $trackableItem->refresh();
         $level_after = $trackableItem->level;
 
-        $this->createLog($trackable_item_id, $level_before, $level_after, 'create');
+        $this->createLog($trackable_item_id, $level_before, $level_after, 'create', $trackLogs->content);
 
         $this->response = [
             'message' => 'Track log created successfully.',
@@ -222,6 +222,7 @@ class TrackLogService
 
     }
 
+    // track_log 目前沒有使用到 update()
     public function update($userId, $request, $typeId, $trackable_item_id, $track_log_id)
     {
         if (!Type::where('id', $typeId)->exists()) {
