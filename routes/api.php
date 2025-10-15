@@ -34,10 +34,16 @@ Route::controller(UserController::class)->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('type', TypeController::class)
         ->only(['index', 'store', 'update', 'destroy', 'show']); // type
+
+    // trackable item 等級百分比
+    Route::get('type/{type}/trackable-item/percentage', [TrackableItemController::class, 'percentage']);
     Route::apiResource('type.trackable-item', TrackableItemController::class) // /api/type/{type}/trackable-item/{trackable-item}
         ->only(['index', 'store', 'update', 'destroy', 'show']); // trackable-item
+
     Route::apiResource('type.trackable-item.track-log', TrackLogsController::class) //api/type/{type}/trackable-item/{trackable_item}/track-log/{track_log}
         ->only(['index', 'store', 'update', 'destroy', 'show']); // track log
     // 查詢當日所有 track log
+    
     Route::get('type/{typeId}/trackable-item/{trackable_item_id}/track-log-by-date', [TrackLogsController::class, 'getLogsByDate']); //api/type/{type}/trackable-item/{trackable_item}/track-log-by-date?date={date}
+
 });

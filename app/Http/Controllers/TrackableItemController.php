@@ -56,4 +56,11 @@ class TrackableItemController extends Controller
             ->getResponse();
     }
 
+    public function percentage(Request $request, $typeId)
+    {
+        return (new TrackableItemService($request))
+            ->getLevelPercentByName($typeId)
+            ->getResponse();
+    }
+
 }

@@ -139,6 +139,35 @@ class TrackableItemService
         return $this;
     }
 
+    public function getLevelPercentByName($typeId)
+    {
+        // 取得所有該 type_id 的 TrackableItem
+        $trackableItems = TrackableItem::where('user_id', $this->userId)
+            ->where('type_id', $typeId)
+            ->get();
+
+        // 依 name 分組並加總 level
+        $levelSumByName = $trackableItems->groupBy('name')->map(function ($group) {
+            return $group->sum('level');
+        });
+
+        // 計算所有 name 的 level 總和
+        $totalLevel = $levelSumByName->sum();
+
+        // 計算每個 name 的百分比
+        $percentByName = $levelSumByName->map(function ($level, $name) use ($totalLevel) {
+            return $totalLevel > 0 ? round($level / $totalLevel * 100, 2) : 0;
+        });
+
+        $this->response = [
+            'level_sum_by_name' => $levelSumByName,
+            'percent_by_name' => $percentByName,
+            'total_level' => $totalLevel
+        ];
+
+        return $this;
+    }
+
     public function getResponse()
     {
         return response()->json($this->response);

@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>子項目管理 | DreamGrow</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Quicksand:wght@400;700&display=swap"
@@ -26,7 +27,7 @@
             padding: 0;
         }
 
-       /* 導覽列簡易半透明白色樣式 */
+        /* 導覽列簡易半透明白色樣式 */
         .dream-navbar {
             width: 100%;
             background: rgba(255, 255, 255, 0.7);
@@ -235,6 +236,12 @@
             <input type="text" id="achievementText" placeholder="Achievement Text">
             <button id="addItemBtn" class="btn">Add</button>
         </div>
+        <div class="dream-container">
+            <!-- ...existing code... -->
+            <h3 style="margin-top:32px;">各子項目等級百分比</h3>
+            <canvas id="levelPieChart" width="400" height="400"></canvas>
+            <!-- ...existing code... -->
+        </div>
         <ul id="itemList" class="dream-item-list"></ul>
     </div>
 
@@ -261,10 +268,57 @@
 
         const typeId = getTypeIdFromUrl();
 
+        // 圓餅圖
+        function loadLevelPercentage() {
+            $.ajax({
+                url: `/api/type/${typeId}/trackable-item/percentage`,
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                success: function (res) {
+                    const percentByName = res.percent_by_name || {};
+                    const labels = Object.keys(percentByName).map(name => `${percentByName[name]}% ${name}`);
+                    const data = Object.values(percentByName);
+
+                    // 畫 Chart.js 圓餅圖
+                    const ctx = document.getElementById('levelPieChart').getContext('2d');
+                    if (window.levelPieChart && typeof window.levelPieChart.destroy === 'function') {
+                        window.levelPieChart.destroy();
+                    }
+                    window.levelPieChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: data,
+                                backgroundColor: [
+                                    '#6c63ff', '#fed6e3', '#e0e7ff', '#e67e22', '#ffb3b3', '#b3c6ff', '#e74c3c'
+                                ],
+                            }]
+                        },
+                        options: {
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return `${context.label}: ${context.parsed}%`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
         // 載入 typename & item
         $(function () {
             loadTypeName();
             loadItems();
+            loadLevelPercentage();
         });
 
         function loadTypeName() {
